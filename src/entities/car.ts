@@ -71,6 +71,7 @@ export const createCar = (
   missionTag: false,
   upgrades: { engine: false, armor: false, brakes: false },
   owned: false,
+  gang: false,
   dead: false,
 });
 

@@ -9,13 +9,15 @@ import {
 } from "../game/state";
 import { tileAtWorld, tileCenter } from "../world/cityMap";
 import { Tile } from "../world/tiles";
+import { createEscapeMission, releaseGang } from "./mafiaSystem";
 import { findSpawnTile, spawnLaneCar } from "./spawnSystem";
 
 /** Secondi in cui resta a schermo il banner "MISSIONE COMPIUTA" */
 const SUCCESS_BANNER_TIME = 3;
-const KINDS: MissionKind[] = ["checkpoint", "deliver", "eliminate"];
+const KINDS: MissionKind[] = ["checkpoint", "deliver", "eliminate", "escape"];
 
 const createMission = (s: GameState, kind: MissionKind): Mission | null => {
+  if (kind === "escape") return createEscapeMission(s);
   const from = s.player.pos;
   if (kind === "checkpoint") {
     const t = findSpawnTile(s, from, "lanes", 700, 1500);
@@ -30,6 +32,8 @@ const createMission = (s: GameState, kind: MissionKind): Mission | null => {
       stage: 0,
       car: null,
       ped: null,
+      gang: [],
+      gangLastSeen: null,
     };
   }
   if (kind === "deliver") {
@@ -48,6 +52,8 @@ const createMission = (s: GameState, kind: MissionKind): Mission | null => {
       stage: 0,
       car,
       ped: null,
+      gang: [],
+      gangLastSeen: null,
     };
   }
   const t = findSpawnTile(s, from, "walk", 600, 1300);
@@ -65,6 +71,8 @@ const createMission = (s: GameState, kind: MissionKind): Mission | null => {
     stage: 0,
     car: null,
     ped,
+    gang: [],
+    gangLastSeen: null,
   };
 };
 
@@ -73,6 +81,7 @@ const finish = (s: GameState, success: boolean): void => {
   if (!m) return;
   if (m.car) m.car.missionTag = false;
   if (m.ped) m.ped.missionTarget = false;
+  releaseGang(m);
   if (success) {
     const reward = m.reward * s.multiplier;
     s.money += reward;
@@ -107,8 +116,13 @@ export const updateMissions = (s: GameState, dt: number): void => {
 
   const m = s.mission;
   m.timeLeft -= dt;
+  // Nella fuga dalla mafia scadere il tempo vuol dire essere sopravvissuti
   if (m.timeLeft <= 0) {
-    finish(s, false);
+    finish(s, m.kind === "escape");
+    return;
+  }
+  if (m.kind === "escape") {
+    if (dist(p.car ? p.car.pos : p.pos, m.target) < 48) finish(s, true);
     return;
   }
 

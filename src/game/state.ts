@@ -12,7 +12,7 @@ import type {
 } from "../entities/types";
 import type { CityMap, ShopKind } from "../world/cityMap";
 
-export type MissionKind = "checkpoint" | "deliver" | "eliminate";
+export type MissionKind = "checkpoint" | "deliver" | "eliminate" | "escape";
 
 export interface Mission {
   kind: MissionKind;
@@ -24,6 +24,9 @@ export interface Mission {
   stage: number;
   car: Car | null;
   ped: Pedestrian | null;
+  /** Fuga dalla mafia: auto della mafia e ultimo punto in cui ti hanno visto */
+  gang: Car[];
+  gangLastSeen: Vec2 | null;
 }
 
 export interface GameState {

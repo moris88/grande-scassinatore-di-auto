@@ -10,7 +10,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto
 - [x] Configurazione Biome
 - [x] Configurazione Vitest
 - [x] Script npm: `dev`, `build`, `lint`, `format`, `test`
-- [ ] Primo commit (in attesa di conferma)
+- [x] Primo commit (`6f3962c`)
 
 ## Fase 2 — Motore, mappa, camminata
 - [x] Game loop a timestep fisso (60Hz)
@@ -56,7 +56,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto
 
 ## Verifica finale
 - [x] Biome pulito
-- [x] Test verdi (52 test, incluse simulazioni headless del gioco)
+- [x] Test verdi (56 test, incluse simulazioni headless del gioco)
 - [x] `npm run build` senza errori
 - [ ] Prova di gioco nel browser (da fare a mano: `npm run dev`)
 
@@ -86,7 +86,7 @@ Decisioni prese:
 - [x] possibilità di entrare nei palazzi, per missioni di negozi e uffici (lotto E1: porte con tenda a strisce e insegna, E dal marciapiede davanti, interno a schermata separata col mondo fermo; al posto degli uffici, su richiesta, ospedale nel lotto G)
 - [x] possibilità di vedere agenti della polizia all'interno della città e che se sono inseguito che escono dalle autoi per inseguire il giocatore (lotto B: 3 agenti di pattuglia, più agenti con più stelle; scendono dalla volante quando è vicina e lenta, corrono, sparano da 2 stelle, arrestano)
 - [x] Bug relativi alle auto in coda, come il blocco del traffico o il comportamento irregolare nelle curve (vedi immagine Screenshot 2026-11-23 200115.png) (lotto A: le curve a 90° agli angoli non hanno più semaforo né linea d'arresto, solo gli incroci a T e a croce; vedi anche il fix delle curve)
-- [ ] Introdurre missioni dove sei tu colui che deve essere inseguito o catturato dalla mafia, con possibilità di fuga e nascondigli
+- [x] Introdurre missioni dove sei tu colui che deve essere inseguito o catturato dalla mafia, con possibilità di fuga e nascondigli (lotto F: quarta missione delle cabine; 3 auto nere della mafia, magenta sulla minimappa, ti vedono come la polizia e ti inseguono sparando, se ti perdono vanno all'ultimo punto noto; vinci resistendo 60 s o raggiungendo il rifugio (parcheggio coperto più lontano, $2500 base); nei parcheggi coperti ti perdono; se ti restano addosso mentre sei fermo ti catturano e perdi una vita)
 - [x] Inserire il negozio di armi, con possibilità di acquistare armi e munizioni (le armi devono essere presenti solo nei negozi di armi, non in giro per la città) (lotto E1: armeria a nord, pistola +30 colpi $200, mitraglietta +120 colpi $600; casse armi rimosse dalla città)
 - [x] Inserire il negozio di vestiti, con possibilità di cambiare abbigliamento del personaggio (lotto E2: 5 giacche colorate a $50; se ti cercano senza vederti la polizia ti perde, ricerca a 3 s; i vestiti restano dopo la morte)
 - [x] Inserire il negozio di veicoli, con possibilità di acquistare e personalizzare auto (lotto E2: auto base $400, 5 colori, motore +30% velocità $300, blindatura danni dimezzati $400, freni +50% $200; l'auto viene consegnata davanti al concessionario)

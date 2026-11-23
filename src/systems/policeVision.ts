@@ -30,7 +30,8 @@ export const playerHidden = (s: GameState): boolean => {
   return t === Tile.ParkingCovered || t === Tile.SprayShop;
 };
 
-const sees = (s: GameState, from: Vec2, range: number): boolean => {
+/** Un osservatore in `from` vede il giocatore (distanza, edifici in mezzo, nascondigli) */
+export const sees = (s: GameState, from: Vec2, range: number): boolean => {
   const p = playerPos(s);
   const d = dist(from, p);
   if (d > (playerHidden(s) ? HIDDEN_SIGHT : range)) return false;

@@ -61,8 +61,11 @@ export const drawMinimap = (g: CanvasRenderingContext2D, s: GameState): void => 
   };
   const blink = Math.floor(s.time * 4) % 2 === 0;
   if (!s.mission && blink) for (const b of PHONE_BOOTHS) dot(tileCenter(b), "#ffe600", 5);
-  for (const c of s.cars)
-    if (c.police && !c.dead) dot(c.pos, stars(s) > 0 && blink ? "#ff3030" : "#3a7bff", 3);
+  for (const c of s.cars) {
+    if (c.dead) continue;
+    if (c.police) dot(c.pos, stars(s) > 0 && blink ? "#ff3030" : "#3a7bff", 3);
+    if (c.gang) dot(c.pos, "#ff00aa", 3);
+  }
   if (s.mission && blink) dot(s.mission.target, "#ffe600", 6);
   const pl = s.player;
   dot(pl.car ? pl.car.pos : pl.pos, "#ffffff", 4);

@@ -37,6 +37,8 @@ export interface Car {
   upgrades: CarUpgrades;
   /** Comprata dal giocatore: non sparisce mai quando ci si allontana */
   owned: boolean;
+  /** Auto della mafia (missione di fuga): insegue e spara al giocatore */
+  gang: boolean;
   dead: boolean;
 }
 

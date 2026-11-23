@@ -5,6 +5,7 @@ import { updateAirTraffic } from "../systems/airTraffic";
 import { updateAmbulances } from "../systems/ambulanceSystem";
 import { updateEntityCollisions } from "../systems/collisionSystem";
 import { updateCop } from "../systems/copAi";
+import { updateGang } from "../systems/mafiaSystem";
 import { failMission, updateMissions } from "../systems/missionSystem";
 import { fillParking, updateParking } from "../systems/parkingSystem";
 import { updatePed } from "../systems/pedAi";
@@ -121,6 +122,7 @@ export const updateGame = (s: GameState, input: Input, dt: number): void => {
   updateWanted(s, dt);
   updateMissions(s, dt);
   updateAmbulances(s, dt);
+  updateGang(s, dt);
   updateSpawns(s);
   updateParking(s);
   updateAirTraffic(s, dt);

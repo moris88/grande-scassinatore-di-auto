@@ -2,6 +2,7 @@ import { dist } from "../engine/math";
 import { applyImpactDamage, damageCar, updateCarPhysics } from "../entities/car";
 import type { Car } from "../entities/types";
 import { ambulanceControls } from "../systems/ambulanceSystem";
+import { gangControls } from "../systems/mafiaSystem";
 import { scarePeds } from "../systems/pedAi";
 import { policeControls, policeShoot } from "../systems/policeAi";
 import { trafficControls } from "../systems/trafficAi";
@@ -47,7 +48,11 @@ export const updateCars = (s: GameState, dt: number): void => {
       ctl =
         (s.player.transition?.car === car ? STOPPED : null) ??
         ambulanceControls(s, car) ??
-        (car.police ? policeControls(car, s, dt) : trafficControls(car, s));
+        (car.gang
+          ? gangControls(car, s, dt)
+          : car.police
+            ? policeControls(car, s, dt)
+            : trafficControls(car, s));
       if (car.police) policeShoot(car, s, dt);
     }
     applyImpactDamage(car, updateCarPhysics(car, ctl, dt, s.map));
