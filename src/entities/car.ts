@@ -13,6 +13,10 @@ const GRIP = 9;
 const HANDBRAKE_GRIP = 1.4;
 /** Sotto questa velocità la sterzata è ridotta in proporzione (raggio minimo ≈ 21 px) */
 const FULL_TURN_SPEED = 60;
+/** Optional del concessionario */
+const ENGINE_BOOST = 1.3;
+const BRAKES_BOOST = 1.5;
+const ARMOR_FACTOR = 0.5;
 
 export const CIVIL_COLORS = [
   "#c0392b",
@@ -23,6 +27,12 @@ export const CIVIL_COLORS = [
   "#ecf0f1",
   "#d35400",
 ];
+
+/** Tipi con un colore fisso (gli altri prendono un colore civile a caso) */
+const FIXED_COLORS: Partial<Record<VehicleKind, string>> = {
+  ambulance: "#f4f4f4",
+  taxi: "#f1c40f",
+};
 
 export interface CarControls {
   throttle: number;
@@ -44,7 +54,7 @@ export const createCar = (
   angle,
   angularVel: 0,
   health: police ? 140 : VEHICLES[kind].health,
-  color: police ? "#1b2a4a" : kind === "ambulance" ? "#f4f4f4" : pick(CIVIL_COLORS),
+  color: police ? "#1b2a4a" : (FIXED_COLORS[kind] ?? pick(CIVIL_COLORS)),
   kind,
   police,
   driver: "none",
@@ -55,9 +65,12 @@ export const createCar = (
   stuckTime: 0,
   reverseTime: 0,
   pushThroughTime: 0,
+  yieldTime: 0,
   burnTime: 0,
   sirenPhase: 0,
   missionTag: false,
+  upgrades: { engine: false, armor: false, brakes: false },
+  owned: false,
   dead: false,
 });
 
@@ -70,16 +83,20 @@ const hitsWall = (map: CityMap, car: Car, pos: Vec2, angle: number): boolean =>
 
 /** Aggiorna la fisica arcade. Ritorna la velocità d'impatto contro un muro (0 se nessuno) */
 export const updateCarPhysics = (car: Car, ctl: CarControls, dt: number, map: CityMap): number => {
-  const maxSpeed = VEHICLES[car.kind].maxSpeed;
+  const up = car.upgrades;
+  const engine = up.engine ? ENGINE_BOOST : 1;
+  const maxSpeed = VEHICLES[car.kind].maxSpeed * engine;
+  const accel = ACCEL * VEHICLES[car.kind].accel * engine;
+  const brake = BRAKE * VEHICLES[car.kind].brake * (up.brakes ? BRAKES_BOOST : 1);
   const cos = Math.cos(car.angle);
   const sin = Math.sin(car.angle);
   let vf = car.vel.x * cos + car.vel.y * sin;
   let vl = -car.vel.x * sin + car.vel.y * cos;
 
   if (ctl.throttle > 0) {
-    vf = vf < -5 ? vf + BRAKE * dt : Math.min(maxSpeed, vf + ACCEL * ctl.throttle * dt);
+    vf = vf < -5 ? vf + brake * dt : Math.min(maxSpeed, vf + accel * ctl.throttle * dt);
   } else if (ctl.throttle < 0) {
-    vf = vf > 5 ? vf - BRAKE * dt : Math.max(-MAX_REVERSE, vf - ACCEL * 0.6 * dt);
+    vf = vf > 5 ? vf - brake * dt : Math.max(-MAX_REVERSE, vf - accel * 0.6 * dt);
   } else {
     const roll = 60 * dt;
     vf = Math.abs(vf) < roll ? 0 : vf - Math.sign(vf) * roll;
@@ -127,7 +144,7 @@ export const moveCar = (car: Car, dt: number, map: CityMap): number => {
 
 /** Danno al muro sopra una certa soglia di velocità */
 export const applyImpactDamage = (car: Car, impact: number): void => {
-  if (impact > 70) car.health -= (impact - 70) * 0.18;
+  if (impact > 70) damageCar(car, (impact - 70) * 0.18);
 };
 
 /** Punto in cui il giocatore esce dall'auto (lato sinistro) */
@@ -138,4 +155,9 @@ export const exitPoint = (car: Car): Vec2 => {
     x: car.pos.x + Math.sin(car.angle) * side - Math.cos(car.angle) * (len / 4),
     y: car.pos.y - Math.cos(car.angle) * side - Math.sin(car.angle) * (len / 4),
   };
+};
+
+/** Danno a un veicolo: la blindatura lo dimezza */
+export const damageCar = (car: Car, amount: number): void => {
+  car.health -= amount * VEHICLES[car.kind].armor * (car.upgrades.armor ? ARMOR_FACTOR : 1);
 };

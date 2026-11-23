@@ -57,8 +57,6 @@ export const PHONE_BOOTHS: Vec2[] = [
 /** Riga (in tile) su cui corre l'unico binario, da ovest a est attraverso tutta la città */
 export const RAIL_ROW = 19;
 
-export const SPRAY_SHOP: Rect = { x: 46, y: 16, w: 2, h: 2 };
-
 /** Parcheggi ricavati negli isolati, tutti affacciati su un marciapiede (h = 1: stalli lungo il
  * marciapiede). Quelli coperti fanno da nascondiglio durante gli inseguimenti. */
 export const PARKING_LOTS: (Rect & { covered: boolean })[] = [
@@ -75,10 +73,23 @@ export const HOSPITAL: Vec2 = { x: 20, y: 27 };
 export const POLICE_STATION: Vec2 = { x: 47, y: 4 };
 
 /** Negozi: la porta è una tile di edificio affacciata sul marciapiede (`outside`) */
-export type ShopKind = "guns" | "food";
+export type ShopKind = "guns" | "food" | "clothes" | "cars" | "hospital";
 export const SHOPS: { kind: ShopKind; door: Vec2; outside: Vec2 }[] = [
   { kind: "guns", door: { x: 24, y: 5 }, outside: { x: 24, y: 4 } },
   { kind: "food", door: { x: 36, y: 35 }, outside: { x: 36, y: 36 } },
+  { kind: "clothes", door: { x: 24, y: 16 }, outside: { x: 24, y: 15 } },
+  { kind: "cars", door: { x: 50, y: 40 }, outside: { x: 50, y: 39 } },
+  // Ospedale: si rinasce sul marciapiede davanti (HOSPITAL), dentro c'è il cuore
+  { kind: "hospital", door: { x: 20, y: 28 }, outside: HOSPITAL },
+];
+
+/** Caserma della polizia: porta con insegna, non si entra; dopo l'arresto si ricompare davanti */
+export const POLICE_DOOR: Vec2 = { x: 47, y: 5 };
+
+/** Garage di verniciatura (2×2): si entra con l'auto per cambiarle colore */
+export const SPRAY_SHOPS: Rect[] = [
+  { x: 46, y: 16, w: 2, h: 2 },
+  { x: 11, y: 40, w: 2, h: 2 },
 ];
 
 export interface CityMap {
@@ -138,7 +149,8 @@ export const buildCity = (): CityMap => {
     if (tiles[idx(x, RAIL_ROW)] !== Tile.Road) tiles[idx(x, RAIL_ROW)] = Tile.Rail;
   for (const p of PHONE_BOOTHS) tiles[idx(p.x, p.y)] = Tile.Phone;
   for (const sh of SHOPS) tiles[idx(sh.door.x, sh.door.y)] = Tile.Door;
-  fill(tiles, SPRAY_SHOP, Tile.SprayShop);
+  tiles[idx(POLICE_DOOR.x, POLICE_DOOR.y)] = Tile.Door;
+  for (const g of SPRAY_SHOPS) fill(tiles, g, Tile.SprayShop);
   for (const p of PARKING_LOTS) fill(tiles, p, p.covered ? Tile.ParkingCovered : Tile.Parking);
   return { tiles, lanes };
 };

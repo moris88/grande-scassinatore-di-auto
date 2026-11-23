@@ -5,11 +5,13 @@ import type { CityMap } from "../world/cityMap";
 import { blocksPeds } from "../world/tiles";
 import type { Player } from "./types";
 
-const WALK_SPEED = 95;
-/** Di corsa si è più veloci degli agenti a piedi (100) */
-const RUN_SPEED = 160;
+const WALK_SPEED = 55;
+/** Di corsa si è più veloci degli agenti a piedi (75), ma molto più lenti di un'auto */
+const RUN_SPEED = 95;
 const TURN_SPEED = 4.2;
 export const MAX_STAMINA = 100;
+/** Giacca di partenza del giocatore */
+export const PLAYER_SHIRT = "#4a6b2a";
 /** Consumo e recupero della barra della corsa (al secondo) */
 const STAMINA_DRAIN = 25;
 const STAMINA_REGEN = 15;
@@ -29,6 +31,7 @@ export const createPlayer = (pos: Vec2): Player => ({
   punchLeft: false,
   transition: null,
   stamina: MAX_STAMINA,
+  shirt: PLAYER_SHIRT,
   exhausted: false,
 });
 

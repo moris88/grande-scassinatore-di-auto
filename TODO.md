@@ -56,7 +56,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto
 
 ## Verifica finale
 - [x] Biome pulito
-- [x] Test verdi (42 test, incluse simulazioni headless del gioco)
+- [x] Test verdi (52 test, incluse simulazioni headless del gioco)
 - [x] `npm run build` senza errori
 - [ ] Prova di gioco nel browser (da fare a mano: `npm run dev`)
 
@@ -83,15 +83,21 @@ Decisioni prese:
 - [x] rivedere i telefoni per le missioni (lotto A: cabina rossa con vetri, tetto a padiglione e insegna TEL; con missione disponibile la lampada sul tetto si accende con alone pulsante)
 - [x] se non ho armi da fuoco, il personaggio deve poter dare i pugni e uccidere i nemici corpo a corpo (lotto A: jab alternato destro/sinistro con sprite dedicato, 2 pugni stendono un pedone, spinta all'indietro, suono d'impatto)
 - [x] inserire animazioni che entra in macchina e esce dalla macchina, (possibilità di scivolare sopra la macchina ed entrare in auto) (lotto C: con E si cammina alla portiera del guidatore; dal lato opposto si scivola sul cofano; l'autista si blocca mentre ti avvicini; scendendo si esce dalla portiera libera; comandi bloccati durante l'animazione; raggio di entrata adattato a camion e autobus)
-- [~] possibilità di entrare nei palazzi, per missioni di negozi e uffici (lotto E1: porte con tenda a strisce e insegna, E dal marciapiede davanti, interno a schermata separata col mondo fermo; negozi fatti, uffici per le missioni ancora da fare)
+- [x] possibilità di entrare nei palazzi, per missioni di negozi e uffici (lotto E1: porte con tenda a strisce e insegna, E dal marciapiede davanti, interno a schermata separata col mondo fermo; al posto degli uffici, su richiesta, ospedale nel lotto G)
 - [x] possibilità di vedere agenti della polizia all'interno della città e che se sono inseguito che escono dalle autoi per inseguire il giocatore (lotto B: 3 agenti di pattuglia, più agenti con più stelle; scendono dalla volante quando è vicina e lenta, corrono, sparano da 2 stelle, arrestano)
 - [x] Bug relativi alle auto in coda, come il blocco del traffico o il comportamento irregolare nelle curve (vedi immagine Screenshot 2026-11-23 200115.png) (lotto A: le curve a 90° agli angoli non hanno più semaforo né linea d'arresto, solo gli incroci a T e a croce; vedi anche il fix delle curve)
 - [ ] Introdurre missioni dove sei tu colui che deve essere inseguito o catturato dalla mafia, con possibilità di fuga e nascondigli
 - [x] Inserire il negozio di armi, con possibilità di acquistare armi e munizioni (le armi devono essere presenti solo nei negozi di armi, non in giro per la città) (lotto E1: armeria a nord, pistola +30 colpi $200, mitraglietta +120 colpi $600; casse armi rimosse dalla città)
-- [ ] Inserire il negozio di vestiti, con possibilità di cambiare abbigliamento del personaggio
-- [ ] Inserire il negozio di veicoli, con possibilità di acquistare e personalizzare auto
+- [x] Inserire il negozio di vestiti, con possibilità di cambiare abbigliamento del personaggio (lotto E2: 5 giacche colorate a $50; se ti cercano senza vederti la polizia ti perde, ricerca a 3 s; i vestiti restano dopo la morte)
+- [x] Inserire il negozio di veicoli, con possibilità di acquistare e personalizzare auto (lotto E2: auto base $400, 5 colori, motore +30% velocità $300, blindatura danni dimezzati $400, freni +50% $200; l'auto viene consegnata davanti al concessionario)
 - [x] Inserire il negozio di alimentari, con possibilità di acquistare cibo e bevande (per ripristinare salute o energia) (lotto E1: acqua, panino e pizza curano, la bibita energetica ricarica la corsa; barra della corsa con Shift: corsa a 160, si svuota in 4 s, vuota si cammina finché non torna al 30%)
 - [x] Il gioco si chiama "Grande Scassinatore di Auto", inseriscilo nel menu iniziale (lotto A: titolo grande nel menu e nella scheda del browser)
 - [x] Aggiungi i parcheggi, dove sono parcheggiate le auto (lotto B: 3 piazzali, di cui 2 coperti, e 2 file di stalli lungo i marciapiedi; auto vuote rubabili senza reato, gli stalli si ripopolano fuori dalla vista)
 - [x] Se scappi dalla polizia, introdurre un sistema di inseguimento con possibilità di nascondersi o cambiare veicolo, se dopo un tot di tempo che la polizia non ti trova azzerare l'inseguimento, (mostrare un messaggio di fine inseguimento, e le stelline accumulate più sono più agenti ti inseguono, aumentano se continui a commettere crimini) (lotto B: la polizia deve vederti davvero, gli edifici bloccano la vista; se ti perde va all'ultimo punto noto e parte la ricerca di 10 s per stella, con le stelle che lampeggiano e il conto alla rovescia; nei parcheggi coperti e in carrozzeria la ricerca scorre al doppio; cambiare veicolo senza essere visto la riduce a 3 s; alla fine azzera le stelle col banner "HAI SEMINATO LA POLIZIA!")
-- [x] Inserisci la schermata di quando vieni ucciso e quando passi una missione con successo (lotto A: banner a tutto schermo che si ingrandisce con rimbalzo; rosso per morte/arresto, verde per missione compiuta con ricompensa e moltiplicatore)
+- [x] Inserisci la schermata di quando vieni ucciso e quando passi una missione con successo (lotto A: banner a tutto schermo che si ingrandisce con rimbalzo; rosso per morte/arresto, verde per missione compiuta con ricompensa e moltiplicatore)- [x] Ospedale: rinasci qui dopo la morte, dentro c'è il cuore che riporta la salute al 100% (lotto G: porta con insegna rossa OSPEDALE dietro il punto di rinascita; cuore gratuito)
+- [x] Caserma della polizia: dopo l'arresto ricompari qui (lotto G: porta con insegna blu POLIZIA dietro il punto di ricomparsa; non si entra)
+- [x] Precedenza ai mezzi con i lampeggianti (lotto G: le auto entro 220 px da un'ambulanza in servizio o da una volante in inseguimento accostano a destra e rallentano; i mezzi con le sirene le superano a sinistra senza fermarsi)
+- [x] Camion e autobus lenti rispetto alle auto (lotto G: crociera 58 e 52 contro 95, velocità massima 160 e 150 contro 280, accelerano e frenano poco)
+- [x] Più tipologie di veicoli con grafica e prestazioni diverse (lotto G: berlina, taxi giallo con insegna, sportiva con strisce e alettone, SUV con portapacchi, furgone, oltre a camion, autobus e ambulanza; ognuno con velocità, accelerazione, frenata e blindatura di serie propri)
+- [x] Garage per cambiare colore all'auto e sfuggire alla polizia (lotto G: 2 garage GARAGE; colore nuovo a caso una volta per ingresso, $100, o $500 da ricercato che azzera l'inseguimento)
+- [x] Velocità a piedi troppo alta (lotto G: camminata 95 → 55, corsa 160 → 95, agenti a piedi 100 → 75; le auto restano molto più veloci)

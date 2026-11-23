@@ -1,5 +1,5 @@
-import { dist } from "../engine/math";
-import { forwardSpeed } from "../entities/car";
+import { dist, pick } from "../engine/math";
+import { CIVIL_COLORS, forwardSpeed } from "../entities/car";
 import { type GameState, playSound, showMessage, stars } from "../game/state";
 import { tileAtWorld } from "../world/cityMap";
 import { Tile } from "../world/tiles";
@@ -12,7 +12,9 @@ export const SEARCH_PER_STAR = 10;
 const HIDDEN_SPEEDUP = 2;
 /** Cambiando veicolo (o vestiti) senza essere visto la ricerca si riduce a questi secondi */
 const DISGUISE_TIME = 3;
-const SPRAY_COST = 500;
+/** Riverniciatura: da ricercato costa di più ma azzera l'inseguimento */
+const SPRAY_COST_WANTED = 500;
+const SPRAY_COST = 100;
 const BANNER_TIME = 3;
 
 export const addHeat = (s: GameState, amount: number): void => {
@@ -64,23 +66,37 @@ const updateSearch = (s: GameState, dt: number): void => {
   if (s.searchTime <= 0) clearWanted(s);
 };
 
+/** Garage: entrando con l'auto la si riverniscia di un colore nuovo (una volta per ingresso);
+ * da ricercato costa di più ma la polizia perde le tracce */
+const updateGarage = (s: GameState): void => {
+  const car = s.player.car;
+  const inside = car !== null && tileAtWorld(s.map, car.pos) === Tile.SprayShop;
+  if (!inside || s.inGarage) {
+    s.inGarage = inside;
+    return;
+  }
+  s.inGarage = true;
+  const wanted = stars(s) > 0;
+  const cost = wanted ? SPRAY_COST_WANTED : SPRAY_COST;
+  if (s.money < cost) {
+    showMessage(s, `Servono $${cost} per la riverniciatura`, 2);
+    return;
+  }
+  s.money -= cost;
+  car.color = pick(CIVIL_COLORS.filter((c) => c !== car.color));
+  if (wanted) {
+    s.heat = 0;
+    s.searchTime = 0;
+    s.lastSeen = null;
+  }
+  showMessage(s, `Auto riverniciata! -$${cost}${wanted ? " · la polizia ti ha perso" : ""}`);
+};
+
 export const updateWanted = (s: GameState, dt: number): void => {
   const p = s.player;
   updateSearch(s, dt);
 
-  // Carrozzeria: riverniciatura e azzeramento del ricercato
-  if (p.car && s.heat >= 1 && tileAtWorld(s.map, p.car.pos) === Tile.SprayShop) {
-    if (s.money >= SPRAY_COST) {
-      s.money -= SPRAY_COST;
-      s.heat = 0;
-      s.searchTime = 0;
-      s.lastSeen = null;
-      p.car.color = p.car.color === "#ecf0f1" ? "#2c3e50" : "#ecf0f1";
-      showMessage(s, `Auto riverniciata! -$${SPRAY_COST}`);
-    } else {
-      showMessage(s, `Servono $${SPRAY_COST} per la riverniciatura`, 1);
-    }
-  }
+  updateGarage(s);
 
   // Arresto: volante o agente fermi accanto al giocatore lento o a piedi
   if (stars(s) === 0) {

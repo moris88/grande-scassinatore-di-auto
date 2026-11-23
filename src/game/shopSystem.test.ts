@@ -1,9 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { Input } from "../engine/input";
+import { createCar } from "../entities/car";
 import { MAX_STAMINA, updatePlayerOnFoot } from "../entities/player";
-import { SHOPS, tileAt, tileCenter } from "../world/cityMap";
+import { updateWanted } from "../systems/wantedSystem";
+import {
+  POLICE_DOOR,
+  POLICE_STATION,
+  SHOPS,
+  SPRAY_SHOPS,
+  tileAt,
+  tileCenter,
+} from "../world/cityMap";
 import { Tile } from "../world/tiles";
 import { createGame, updateGame } from "./game";
+import { CAR_COLORS, JACKETS } from "./shopCatalog";
 import { buyItem, enterShop, shopAtDoor } from "./shopSystem";
 
 /** Input finto con alcuni tasti tenuti premuti */
@@ -60,6 +70,40 @@ describe("negozi", () => {
     expect(s.time).toBe(t);
   });
 
+  it("una giacca nuova cambia colore e, se non ti vedono, la polizia ti perde", () => {
+    const s = createGame();
+    s.money = 100;
+    s.heat = 2.5;
+    s.searchTime = 20;
+    s.seen = false;
+    enterShop(s, "clothes");
+    buyItem(s, 0);
+    expect(s.player.shirt).toBe(JACKETS[0].color);
+    expect(s.searchTime).toBeLessThanOrEqual(3);
+    expect(s.money).toBe(50);
+    buyItem(s, 0);
+    expect(s.shop?.notice).toBe("La stai già indossando");
+    expect(s.money).toBe(50);
+  });
+
+  it("al concessionario si scelgono gli optional e l'auto viene consegnata fuori", () => {
+    const s = createGame();
+    s.money = 2000;
+    enterShop(s, "cars");
+    buyItem(s, 0); // colore successivo
+    buyItem(s, 1); // motore
+    buyItem(s, 2); // blindatura
+    expect(s.money).toBe(2000); // le scelte non si pagano
+    const before = s.cars.length;
+    buyItem(s, 4); // compra: 400 + 300 + 400
+    expect(s.money).toBe(900);
+    const car = s.cars[before];
+    expect(car.color).toBe(CAR_COLORS[1].color);
+    expect(car.upgrades).toEqual({ engine: true, armor: true, brakes: false });
+    expect(car.driver).toBe("none");
+    expect(car.owned).toBe(true);
+  });
+
   it("le armi non si trovano più in giro per la città", () => {
     const s = createGame();
     expect("pickups" in s).toBe(false);
@@ -83,5 +127,43 @@ describe("corsa", () => {
     expect(p.exhausted).toBe(false);
     for (let i = 0; i < 60 * 10; i++) updatePlayerOnFoot(p, idle, 1 / 60, s.map);
     expect(p.stamina).toBe(MAX_STAMINA);
+  });
+});
+
+describe("ospedale, caserma e garage", () => {
+  it("il cuore dell'ospedale riporta la salute al 100% gratis", () => {
+    const s = createGame();
+    s.player.health = 20;
+    enterShop(s, "hospital");
+    buyItem(s, 0);
+    expect(s.player.health).toBe(100);
+    expect(s.money).toBe(0);
+  });
+
+  it("la caserma ha la porta davanti al punto in cui si torna dopo l'arresto", () => {
+    const s = createGame();
+    expect(tileAt(s.map, POLICE_DOOR.x, POLICE_DOOR.y)).toBe(Tile.Door);
+    expect(
+      Math.abs(POLICE_DOOR.y - POLICE_STATION.y) + Math.abs(POLICE_DOOR.x - POLICE_STATION.x),
+    ).toBe(1);
+  });
+
+  it("il garage riverniscia una volta per ingresso e da ricercato fa perdere la polizia", () => {
+    const s = createGame();
+    s.cars = s.cars.filter((c) => !c.police);
+    const garage = SPRAY_SHOPS[0];
+    const car = createCar(tileCenter({ x: garage.x, y: garage.y }), 0);
+    car.driver = "player";
+    s.player.car = car;
+    s.money = 1000;
+    s.heat = 2.5;
+    s.searchTime = 30; // inseguimento in corso
+    const before = car.color;
+    updateWanted(s, 1 / 60);
+    expect(car.color).not.toBe(before);
+    expect(s.heat).toBe(0);
+    expect(s.money).toBe(500);
+    updateWanted(s, 1 / 60);
+    expect(s.money).toBe(500); // ancora dentro: niente seconda riverniciatura
   });
 });

@@ -3,7 +3,7 @@ import type { CarControls } from "../entities/car";
 import { forwardSpeed } from "../entities/car";
 import type { Car } from "../entities/types";
 import { VEHICLES } from "../entities/vehicles";
-import type { GameState } from "../game/state";
+import { type GameState, stars } from "../game/state";
 import { type CityMap, laneAt, tileAt, tileCenter, worldToTile } from "../world/cityMap";
 import { isRailCrossing } from "../world/railway";
 import { ALL_DIRS, type Dir, Tile, dirAngle, dirVector, oppositeDir } from "../world/tiles";
@@ -20,6 +20,13 @@ const TURN_LEAD = 24;
 const TURN_BRAKE_DIST = 80;
 /** Secondi da ferma fuori strada prima della retromarcia (e durata della retromarcia) */
 const UNSTUCK_AFTER = 0.7;
+/** Sirene: raggio in cui si accosta, per quanto si resta accostati, scostamento laterale */
+const YIELD_RADIUS = 220;
+const YIELD_HOLD = 1.5;
+const YIELD_SPEED = 15;
+const SIDE_OFFSET = 11;
+/** Distanza davanti entro cui un mezzo in emergenza si sposta per sorpassare */
+const OVERTAKE_AHEAD = 50;
 
 /** Sceglie la prossima tile seguendo le corsie, con preferenza ad andare dritto */
 export const chooseNext = (map: CityMap, tile: Vec2, dir: Dir): { dir: Dir; tile: Vec2 } | null => {
@@ -57,12 +64,34 @@ const inFront = (car: Car, p: Vec2, halfWidth: number, extra = 0): boolean => {
 };
 
 /** Ostacolo davanti al veicolo (veicoli, pedoni in strada o giocatore) */
-const blockedAhead = (car: Car, s: GameState): boolean => {
+const blockedAhead = (car: Car, s: GameState, emergency: boolean): boolean => {
+  // In emergenza chi sta accostando non è un ostacolo: lo si supera di lato
   const carAhead = (c: Car): boolean =>
-    c !== car && !c.dead && inFront(car, c.pos, 12, VEHICLES[c.kind].len / 2);
+    c !== car &&
+    !c.dead &&
+    !(emergency && c.yieldTime > 0) &&
+    inFront(car, c.pos, 12, VEHICLES[c.kind].len / 2);
   if (s.cars.some(carAhead)) return true;
   if (s.peds.some((p) => p.state !== "dead" && inFront(car, p.pos, 8))) return true;
   return !s.player.car && inFront(car, s.player.pos, 8);
+};
+
+/** Mezzo con le sirene accese: ambulanza in servizio o volante durante un inseguimento */
+export const hasSiren = (car: Car, s: GameState): boolean =>
+  !car.dead &&
+  car.driver === "ai" &&
+  ((car.kind === "ambulance" && car.route !== null) || (car.police && stars(s) > 0));
+
+/** Lato della corsia da tenere: 1 = accosta a destra (sente una sirena), -1 = sorpassa a
+ * sinistra (in emergenza con qualcuno che accosta davanti), 0 = centro corsia */
+const laneSide = (car: Car, s: GameState, emergency: boolean): number => {
+  if (emergency || hasSiren(car, s)) {
+    const yielding = s.cars.some((c) => c.yieldTime > 0 && inFront(car, c.pos, 16, OVERTAKE_AHEAD));
+    return yielding ? -1 : 0;
+  }
+  if (s.cars.some((c) => c !== car && hasSiren(c, s) && dist(c.pos, car.pos) < YIELD_RADIUS))
+    car.yieldTime = YIELD_HOLD;
+  return car.yieldTime > 0 ? 1 : 0;
 };
 
 /** Prossima mossa: segue il percorso se c'è (ambulanze, volanti in ricerca), altrimenti a caso */
@@ -111,6 +140,7 @@ export const steerTowards = (car: Car, target: Vec2, cruise: number): CarControl
 };
 
 export const trafficControls = (car: Car, s: GameState): CarControls => {
+  car.yieldTime = Math.max(0, car.yieldTime - 1 / 60);
   const here = worldToTile(car.pos);
   if (!car.aiTarget || dist(car.pos, tileCenter(car.aiTarget)) > 96) {
     const lane = laneAt(s.map, here.x, here.y) !== 0 ? here : nearestLane(s.map, here);
@@ -161,7 +191,7 @@ export const trafficControls = (car: Car, s: GameState): CarControls => {
   // Pazienza: dopo un'attesa lunga riparte comunque per 1 secondo (evita gli stalli).
   // In coda sui rettilinei si aspetta di più, così le code ai semafori restano ordinate.
   car.pushThroughTime = Math.max(0, car.pushThroughTime - 1 / 60);
-  if (car.pushThroughTime <= 0 && blockedAhead(car, s)) {
+  if (car.pushThroughTime <= 0 && blockedAhead(car, s, emergency)) {
     car.stuckTime += 1 / 60;
     if (car.stuckTime > (inCrossing ? 2 : 9)) {
       car.stuckTime = 0;
@@ -187,5 +217,15 @@ export const trafficControls = (car: Car, s: GameState): CarControls => {
   const misaligned = Math.abs(wrapAngle(dirAngle(car.laneDir) - car.angle)) > 0.25;
   const slow = misaligned || (turning && along > -TURN_BRAKE_DIST);
   const cruise = VEHICLES[car.kind].cruise * (emergency ? EMERGENCY_BOOST : 1);
+  // Sirene: i civili accostano a destra; chi è in emergenza li supera tenendo la sinistra
+  const side = laneSide(car, s, emergency);
+  if (side !== 0) {
+    const right = { x: -dv.y, y: dv.x };
+    const aim = {
+      x: target.x + right.x * side * SIDE_OFFSET,
+      y: target.y + right.y * side * SIDE_OFFSET,
+    };
+    return steerTowards(car, aim, side > 0 ? YIELD_SPEED : cruise);
+  }
   return steerTowards(car, target, slow ? TURN_CRUISE : cruise);
 };

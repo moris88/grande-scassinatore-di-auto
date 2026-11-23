@@ -58,7 +58,7 @@ export interface GameState {
   /** Schermata grande: missione compiuta o polizia seminata */
   banner: { kind: "success" | "escaped"; detail: string; time: number } | null;
   /** Negozio in cui si trova il giocatore (il mondo è fermo), con l'ultimo avviso */
-  shop: { kind: ShopKind; notice: string } | null;
+  shop: { kind: ShopKind; notice: string; dealer: DealerConfig } | null;
   /** Intervento dell'ambulanza in corso (uno alla volta); treat = secondi di soccorso rimasti */
   ambulanceJob: { car: Car; ped: Pedestrian; treat: number; time: number } | null;
   /** Schermata "MORTO"/"ARRESTATO" prima del respawn */
@@ -66,6 +66,8 @@ export interface GameState {
   downReason: "wasted" | "busted" | null;
   gameOver: boolean;
   bustTimer: number;
+  /** Il giocatore è dentro un garage con l'auto (la riverniciatura avviene una volta per ingresso) */
+  inGarage: boolean;
   time: number;
   /** Suoni da riprodurre nel prossimo frame */
   sounds: SoundEvent[];
@@ -80,3 +82,12 @@ export const playSound = (s: GameState, e: SoundEvent): void => {
 export const showMessage = (s: GameState, text: string, time = 3): void => {
   s.message = { text, time };
 };
+
+/** Configurazione scelta al concessionario prima dell'acquisto */
+export interface DealerConfig {
+  /** Indice nella lista dei colori disponibili */
+  color: number;
+  engine: boolean;
+  armor: boolean;
+  brakes: boolean;
+}

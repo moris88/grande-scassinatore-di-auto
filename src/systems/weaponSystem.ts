@@ -1,6 +1,7 @@
 import { PED_RADIUS, circleBlocked, moveCircle } from "../engine/collision";
 import type { Input } from "../engine/input";
 import { dist } from "../engine/math";
+import { damageCar } from "../entities/car";
 import type { Pedestrian, WeaponKind } from "../entities/types";
 import { type GameState, playSound } from "../game/state";
 import { blocksCars, blocksPeds } from "../world/tiles";
@@ -126,7 +127,7 @@ export const updateBullets = (s: GameState, dt: number): void => {
     }
     const car = s.cars.find((c) => !c.dead && c !== s.player.car && dist(c.pos, b.pos) < 11);
     if (car && (b.fromPlayer || !car.police)) {
-      car.health -= 9;
+      damageCar(car, 9);
       if (b.fromPlayer && car.police) crime(s, 0.15);
       b.life = 0;
       continue;
@@ -134,7 +135,7 @@ export const updateBullets = (s: GameState, dt: number): void => {
     if (!b.fromPlayer) {
       const target = s.player.car ?? s.player;
       if (dist(target.pos, b.pos) < (s.player.car ? 11 : PED_RADIUS + 2)) {
-        if (s.player.car) s.player.car.health -= 7;
+        if (s.player.car) damageCar(s.player.car, 7);
         else s.player.health -= 12;
         b.life = 0;
       }

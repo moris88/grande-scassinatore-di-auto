@@ -2,9 +2,10 @@ import {
   type CityMap,
   MAP_H,
   MAP_W,
+  POLICE_DOOR,
   RAIL_ROW,
   SHOPS,
-  SPRAY_SHOP,
+  SPRAY_SHOPS,
   type ShopKind,
   laneAt,
   tileAt,
@@ -12,7 +13,13 @@ import {
 import { Dir, TILE, Tile } from "../world/tiles";
 import { shade } from "./sprites";
 
-const SHOP_SIGNS: Record<ShopKind, string> = { guns: "ARMI", food: "ALIMENTARI" };
+const SHOP_SIGNS: Record<ShopKind, string> = {
+  guns: "ARMI",
+  food: "ALIMENTARI",
+  clothes: "VESTITI",
+  cars: "AUTO",
+  hospital: "OSPEDALE",
+};
 
 const ROOFS = ["#7a5c4f", "#6b6b7a", "#8a7f6a", "#5e6e5e", "#7d4f4f", "#6a5a72"];
 
@@ -230,17 +237,24 @@ export const renderMap = (map: CityMap): HTMLCanvasElement => {
   }
   g.fillStyle = "#e1b12c";
   g.font = "bold 9px monospace";
-  g.fillText("VERNICIA", SPRAY_SHOP.x * TILE + 10, SPRAY_SHOP.y * TILE + 36);
-  // Insegne dei negozi sul tetto, sopra la porta
+  for (const sp of SPRAY_SHOPS) g.fillText("GARAGE", sp.x * TILE + 16, sp.y * TILE + 36);
+  // Insegne sul tetto, sopra la porta (negozi, ospedale, caserma)
   g.font = "bold 8px monospace";
-  for (const sh of SHOPS) {
-    const label = SHOP_SIGNS[sh.kind];
-    const x = (sh.door.x + 0.5) * TILE - label.length * 2.5;
-    const y = sh.door.y * TILE + (sh.outside.y < sh.door.y ? 18 : 12);
-    g.fillStyle = "#000";
+  const sign = (label: string, door: { x: number; y: number }, below: boolean, bg: string) => {
+    const x = (door.x + 0.5) * TILE - label.length * 2.5;
+    const y = door.y * TILE + (below ? 18 : 12);
+    g.fillStyle = bg;
     g.fillRect(x - 2, y - 8, label.length * 5 + 4, 10);
     g.fillStyle = "#ffe600";
     g.fillText(label, x, y);
-  }
+  };
+  for (const sh of SHOPS)
+    sign(
+      SHOP_SIGNS[sh.kind],
+      sh.door,
+      sh.outside.y < sh.door.y,
+      sh.kind === "hospital" ? "#c0392b" : "#000",
+    );
+  sign("POLIZIA", POLICE_DOOR, true, "#1b3a8a");
   return c;
 };

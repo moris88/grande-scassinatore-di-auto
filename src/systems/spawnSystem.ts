@@ -1,7 +1,7 @@
 import { type Vec2, dist, pick } from "../engine/math";
 import { createCar } from "../entities/car";
 import { createCop, createPed } from "../entities/pedestrian";
-import type { VehicleKind } from "../entities/vehicles";
+import { TRAFFIC_MIX, type VehicleKind } from "../entities/vehicles";
 import { type GameState, stars } from "../game/state";
 import { type CityMap, MAP_H, MAP_W, laneAt, tileAt, tileCenter } from "../world/cityMap";
 import { ALL_DIRS, dirAngle, isWalkable } from "../world/tiles";
@@ -12,8 +12,6 @@ const PEDS = 40;
 const SPAWN_MIN = 480;
 const SPAWN_MAX = 820;
 const DESPAWN = 1100;
-const TRUCK_SHARE = 0.15;
-const BUS_SHARE = 0.12;
 
 interface SpawnLists {
   lanes: Vec2[];
@@ -68,10 +66,15 @@ export const spawnLaneCar = (s: GameState, tile: Vec2, police: boolean, kind?: V
   return car;
 };
 
-/** Tipo di veicolo civile: soprattutto auto, qualche camion e autobus */
+/** Tipo di veicolo civile, pesato secondo TRAFFIC_MIX */
 const randomTrafficKind = (): VehicleKind => {
-  const r = Math.random();
-  return r < TRUCK_SHARE ? "truck" : r < TRUCK_SHARE + BUS_SHARE ? "bus" : "car";
+  const total = TRAFFIC_MIX.reduce((sum, [, w]) => sum + w, 0);
+  let r = Math.random() * total;
+  for (const [kind, w] of TRAFFIC_MIX) {
+    r -= w;
+    if (r <= 0) return kind;
+  }
+  return "car";
 };
 
 const keep = (from: Vec2, pos: Vec2, protectedEntity: boolean): boolean =>
@@ -84,7 +87,7 @@ export const updateSpawns = (s: GameState): void => {
     keep(
       from,
       c.pos,
-      c.driver === "player" || c.missionTag || c === s.player.car || c === job?.car,
+      c.driver === "player" || c.missionTag || c.owned || c === s.player.car || c === job?.car,
     ),
   );
   // I pedoni a terra spariscono dopo un po', tranne quello che l'ambulanza sta soccorrendo

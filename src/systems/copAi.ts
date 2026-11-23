@@ -8,8 +8,8 @@ import { blocksPeds } from "../world/tiles";
 import { walkPed } from "./pedAi";
 import { lineOfSight, playerPos } from "./policeVision";
 
-/** Gli agenti corrono un po' più veloci del giocatore che cammina (95) */
-const COP_RUN = 100;
+/** Gli agenti corrono più veloci del giocatore che cammina (55), più lenti di chi corre (95) */
+const COP_RUN = 75;
 const SHOOT_RANGE = 200;
 const SHOOT_EVERY = 1.3;
 /** Agenti a piedi massimi: crescono con le stelle */

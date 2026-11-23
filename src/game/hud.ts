@@ -1,5 +1,5 @@
 import type { WeaponKind } from "../entities/types";
-import { CATALOG } from "./shopSystem";
+import { SHOP_TITLES, shopItems } from "./shopCatalog";
 import { type GameState, stars } from "./state";
 
 export interface HudData {
@@ -30,16 +30,20 @@ export interface HudData {
 export interface ShopHud {
   title: string;
   notice: string;
-  items: { label: string; price: number; affordable: boolean }[];
+  items: { label: string; price: number | null; affordable: boolean }[];
 }
 
 const shopHud = (s: GameState): ShopHud | null => {
   if (!s.shop) return null;
-  const { title, items } = CATALOG[s.shop.kind];
   return {
-    title,
+    title: SHOP_TITLES[s.shop.kind],
     notice: s.shop.notice,
-    items: items.map((i) => ({ label: i.label, price: i.price, affordable: s.money >= i.price })),
+    // Le opzioni gratuite (scelte del concessionario) non mostrano un prezzo da pagare
+    items: shopItems(s, s.shop.kind).map((i) => ({
+      label: i.label,
+      price: i.free ? null : i.price,
+      affordable: i.free === true || s.money >= i.price,
+    })),
   };
 };
 

@@ -51,6 +51,7 @@ export const createGame = (): GameState => {
     downReason: null,
     gameOver: false,
     bustTimer: 0,
+    inGarage: false,
     time: 0,
     sounds: [],
   };
@@ -78,7 +79,9 @@ const respawn = (s: GameState): void => {
   }
   const at = tileCenter(s.downReason === "busted" ? POLICE_STATION : HOSPITAL);
   if (s.downReason === "busted") s.money = Math.floor(s.money / 2);
+  const shirt = s.player.shirt; // I vestiti comprati restano anche dopo la morte
   s.player = createPlayer(at);
+  s.player.shirt = shirt;
   s.camera.pos = { ...at };
   s.heat = 0;
   s.bustTimer = 0;

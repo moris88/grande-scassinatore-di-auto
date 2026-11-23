@@ -1,5 +1,6 @@
 import { CAR_RADIUS, PED_RADIUS, carHitsWall, circleBlocked } from "../engine/collision";
 import { type Vec2, dist } from "../engine/math";
+import { damageCar } from "../entities/car";
 import type { Car } from "../entities/types";
 import { VEHICLES, collisionCircles } from "../entities/vehicles";
 import type { GameState } from "../game/state";
@@ -48,8 +49,8 @@ const collideCars = (s: GameState, a: Car, b: Car): void => {
   b.vel.y += j * ma * ny;
   if (rel > 60) {
     const dmg = (rel - 60) * 0.15;
-    a.health -= dmg;
-    b.health -= dmg;
+    damageCar(a, dmg);
+    damageCar(b, dmg);
     const pc = s.player.car;
     if ((a === pc && b.police) || (b === pc && a.police)) crime(s, 0.25);
   }

@@ -1,5 +1,5 @@
 import { dist } from "../engine/math";
-import { applyImpactDamage, updateCarPhysics } from "../entities/car";
+import { applyImpactDamage, damageCar, updateCarPhysics } from "../entities/car";
 import type { Car } from "../entities/types";
 import { ambulanceControls } from "../systems/ambulanceSystem";
 import { scarePeds } from "../systems/pedAi";
@@ -23,7 +23,7 @@ const explode = (s: GameState, car: Car): void => {
   for (const p of s.peds)
     if (p.state !== "dead" && dist(p.pos, car.pos) < BLAST_RADIUS) killPed(s, p, false);
   for (const c of s.cars)
-    if (c !== car && !c.dead && dist(c.pos, car.pos) < BLAST_RADIUS) c.health -= 60;
+    if (c !== car && !c.dead && dist(c.pos, car.pos) < BLAST_RADIUS) damageCar(c, 60);
   const pl = s.player;
   if (pl.car === car) pl.health = 0;
   else if (!pl.car && dist(pl.pos, car.pos) < BLAST_RADIUS) pl.health -= 70;

@@ -28,9 +28,15 @@ export interface Car {
   reverseTime: number;
   /** Secondi in cui l'IA ignora gli ostacoli dopo un'attesa lunga */
   pushThroughTime: number;
+  /** Secondi in cui l'auto resta accostata per lasciar passare un mezzo con le sirene */
+  yieldTime: number;
   burnTime: number;
   sirenPhase: number;
   missionTag: boolean;
+  /** Optional del concessionario: motore (+30% velocità), blindatura (danni dimezzati), freni */
+  upgrades: CarUpgrades;
+  /** Comprata dal giocatore: non sparisce mai quando ci si allontana */
+  owned: boolean;
   dead: boolean;
 }
 
@@ -71,6 +77,8 @@ export interface Player {
   transition: CarTransition | null;
   /** Barra della corsa 0..100 */
   stamina: number;
+  /** Colore della giacca (si cambia al negozio di vestiti) */
+  shirt: string;
   /** Barra svuotata: si cammina finché non si ricarica un po' */
   exhausted: boolean;
 }
@@ -117,4 +125,10 @@ export interface Bullet {
 export interface Explosion {
   pos: Vec2;
   time: number;
+}
+
+export interface CarUpgrades {
+  engine: boolean;
+  armor: boolean;
+  brakes: boolean;
 }

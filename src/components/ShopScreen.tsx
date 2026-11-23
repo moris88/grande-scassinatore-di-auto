@@ -19,7 +19,7 @@ export function ShopScreen({ shop, money: cash }: Props) {
           {shop.items.map((item, i) => (
             <li key={item.label} className={item.affordable ? "" : "too-expensive"}>
               <span className="shop-key">[{i + 1}]</span> {item.label}
-              <span className="shop-price">{money(item.price)}</span>
+              {item.price !== null && <span className="shop-price">{money(item.price)}</span>}
             </li>
           ))}
         </ul>
