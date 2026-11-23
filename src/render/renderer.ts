@@ -5,7 +5,9 @@ import { PHONE_BOOTHS, tileCenter } from "../world/cityMap";
 import { dirVector } from "../world/tiles";
 import { lightFor, stopLines } from "../world/trafficLights";
 import { drawMinimap } from "./minimap";
-import { carSprite, deadPedSprite, pedSprite, pickupSprite, punchSprite } from "./sprites";
+import { drawParkingRoofs } from "./parkingRoofs";
+import { copSprite, deadPedSprite, pedSprite, pickupSprite, punchSprite } from "./sprites";
+import { vehicleSprite } from "./vehicleSprites";
 
 const drawRotated = (
   g: CanvasRenderingContext2D,
@@ -21,17 +23,19 @@ const drawRotated = (
 };
 
 const drawCar = (g: CanvasRenderingContext2D, s: GameState, car: Car): void => {
-  drawRotated(g, carSprite(car.color, car.police, car.dead), car.pos, car.angle);
+  drawRotated(g, vehicleSprite(car.kind, car.color, car.police, car.dead), car.pos, car.angle);
   if (car.dead) return;
-  // Sirene lampeggianti durante l'inseguimento
-  if (car.police && stars(s) > 0) {
+  // Sirene lampeggianti: volanti durante l'inseguimento, ambulanze in servizio
+  const siren = (car.police && stars(s) > 0) || (car.kind === "ambulance" && car.route !== null);
+  if (siren) {
     const on = Math.floor(s.time * 8) % 2 === 0;
+    const other = car.police ? "rgba(60,120,255,0.55)" : "rgba(255,255,255,0.6)";
     g.save();
     g.translate(car.pos.x, car.pos.y);
     g.rotate(car.angle);
-    g.fillStyle = on ? "rgba(255,40,40,0.55)" : "rgba(60,120,255,0.55)";
+    g.fillStyle = on ? "rgba(255,40,40,0.55)" : other;
     g.beginPath();
-    g.arc(-1, on ? -4 : 4, 7, 0, Math.PI * 2);
+    g.arc(car.kind === "ambulance" ? 5 : -1, on ? -4 : 4, 7, 0, Math.PI * 2);
     g.fill();
     g.restore();
   }
@@ -157,7 +161,12 @@ export const renderGame = (
   for (const c of s.cars) if (c.dead) drawCar(g, s, c);
   for (const p of s.peds)
     if (p.state !== "dead")
-      drawRotated(g, pedSprite(p.color, Math.floor(p.walkPhase) % 2), p.pos, p.angle);
+      drawRotated(
+        g,
+        (p.role === "cop" ? copSprite : pedSprite)(p.color, Math.floor(p.walkPhase) % 2),
+        p.pos,
+        p.angle,
+      );
 
   const pl = s.player;
   if (!pl.car && !s.downReason) {
@@ -170,6 +179,7 @@ export const renderGame = (
   if (!pl.car && s.downReason === "wasted")
     drawRotated(g, deadPedSprite("#4a6b2a"), pl.pos, pl.angle);
   for (const c of s.cars) if (!c.dead) drawCar(g, s, c);
+  drawParkingRoofs(g, s);
 
   g.fillStyle = "#ffe98a";
   for (const b of s.bullets) g.fillRect(b.pos.x - 1, b.pos.y - 1, 2, 2);

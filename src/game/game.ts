@@ -1,8 +1,11 @@
 import { updateCamera } from "../engine/camera";
 import type { Input } from "../engine/input";
 import { createPlayer } from "../entities/player";
+import { updateAmbulances } from "../systems/ambulanceSystem";
 import { updateEntityCollisions } from "../systems/collisionSystem";
+import { updateCop } from "../systems/copAi";
 import { failMission, updateMissions } from "../systems/missionSystem";
+import { fillParking, updateParking } from "../systems/parkingSystem";
 import { updatePed } from "../systems/pedAi";
 import { updateSpawns } from "../systems/spawnSystem";
 import { isBusted, updateWanted } from "../systems/wantedSystem";
@@ -33,14 +36,17 @@ export const createGame = (): GameState => {
     pickups: WEAPON_SPAWNS.map((w) => ({ pos: tileCenter(w.tile), weapon: w.weapon, respawn: 0 })),
     camera: { pos: { ...start }, zoom: 2 },
     heat: 0,
-    heatCooldown: 0,
+    seen: false,
+    lastSeen: null,
+    searchTime: 0,
     money: 0,
     multiplier: 1,
     lives: 3,
     mission: null,
     phoneCooldown: 0,
     message: null,
-    successBanner: null,
+    banner: null,
+    ambulanceJob: null,
     downTime: 0,
     downReason: null,
     gameOver: false,
@@ -48,6 +54,7 @@ export const createGame = (): GameState => {
     time: 0,
     sounds: [],
   };
+  fillParking(s);
   showMessage(s, "Benvenuto in città. Cerca le cabine telefoniche ☎ per le missioni", 5);
   return s;
 };
@@ -84,9 +91,9 @@ export const updateGame = (s: GameState, input: Input, dt: number): void => {
     s.message.time -= dt;
     if (s.message.time <= 0) s.message = null;
   }
-  if (s.successBanner) {
-    s.successBanner.time -= dt;
-    if (s.successBanner.time <= 0) s.successBanner = null;
+  if (s.banner) {
+    s.banner.time -= dt;
+    if (s.banner.time <= 0) s.banner = null;
   }
 
   if (s.downReason) {
@@ -98,13 +105,17 @@ export const updateGame = (s: GameState, input: Input, dt: number): void => {
   }
 
   updateCars(s, dt);
-  for (const p of s.peds) updatePed(s, p, dt);
+  for (const p of s.peds)
+    if (p.role === "cop") updateCop(s, p, dt);
+    else updatePed(s, p, dt);
   updateBullets(s, dt);
   updatePickups(s, dt);
   updateEntityCollisions(s);
   updateWanted(s, dt);
   updateMissions(s, dt);
+  updateAmbulances(s, dt);
   updateSpawns(s);
+  updateParking(s);
 
   if (!s.downReason) {
     if (s.player.health <= 0) knockDown(s, "wasted");

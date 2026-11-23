@@ -17,7 +17,7 @@ export const shade = (hex: string, f: number): string => {
   return `rgb(${r},${g},${b})`;
 };
 
-const makeCanvas = (w: number, h: number): [HTMLCanvasElement, CanvasRenderingContext2D] => {
+export const makeCanvas = (w: number, h: number): [HTMLCanvasElement, CanvasRenderingContext2D] => {
   const c = document.createElement("canvas");
   c.width = w;
   c.height = h;
@@ -28,7 +28,7 @@ const makeCanvas = (w: number, h: number): [HTMLCanvasElement, CanvasRenderingCo
 
 const cache = new Map<string, HTMLCanvasElement>();
 
-const cached = (key: string, draw: () => HTMLCanvasElement): HTMLCanvasElement => {
+export const cached = (key: string, draw: () => HTMLCanvasElement): HTMLCanvasElement => {
   let c = cache.get(key);
   if (!c) {
     c = draw();
@@ -105,7 +105,21 @@ export const pedSprite = (shirt: string, frame: number): HTMLCanvasElement =>
     return c;
   });
 
-/** Giocatore che tira un pugno: un braccio teso in avanti (sinistro in alto, destro in basso) */
+/** Agente di polizia: pedone in divisa con berretto e visiera */
+export const copSprite = (uniform: string, frame: number): HTMLCanvasElement =>
+  cached(`cop:${uniform}:${frame}`, () => {
+    const [c, g] = makeCanvas(PED_SPRITE, PED_SPRITE);
+    g.drawImage(pedSprite(uniform, frame), 0, 0);
+    g.fillStyle = "#0f1f4a";
+    g.fillRect(4, 3, 3, 4);
+    g.fillStyle = "#111";
+    g.fillRect(7, 3, 1, 4);
+    g.fillStyle = "#f1c40f";
+    g.fillRect(5, 4, 1, 1);
+    return c;
+  });
+
+/** Giocatore che tira un pugno:un braccio teso in avanti (sinistro in alto, destro in basso) */
 export const punchSprite = (shirt: string, left: boolean): HTMLCanvasElement =>
   cached(`punch:${shirt}:${left}`, () => {
     const [c, g] = makeCanvas(PED_SPRITE, PED_SPRITE);

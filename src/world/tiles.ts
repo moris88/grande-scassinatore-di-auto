@@ -8,6 +8,9 @@ export enum Tile {
   Water = 4,
   Phone = 5,
   SprayShop = 6,
+  Parking = 7,
+  /** Parcheggio coperto: dall'alto non si vede chi c'è dentro (nascondiglio) */
+  ParkingCovered = 8,
 }
 
 /** Direzioni di corsia come bitmask */
@@ -48,4 +51,8 @@ export const blocksCars = (t: Tile): boolean => t === Tile.Building || t === Til
 export const blocksPeds = (t: Tile): boolean => t === Tile.Building || t === Tile.Water;
 
 export const isWalkable = (t: Tile): boolean =>
-  t === Tile.Sidewalk || t === Tile.Grass || t === Tile.Phone;
+  t === Tile.Sidewalk ||
+  t === Tile.Grass ||
+  t === Tile.Phone ||
+  t === Tile.Parking ||
+  t === Tile.ParkingCovered;

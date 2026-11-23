@@ -77,7 +77,11 @@ const finish = (s: GameState, success: boolean): void => {
     const reward = m.reward * s.multiplier;
     s.money += reward;
     s.multiplier = Math.min(5, s.multiplier + 1);
-    s.successBanner = { reward, time: SUCCESS_BANNER_TIME };
+    s.banner = {
+      kind: "success",
+      detail: `+$${reward.toLocaleString("it-IT")} · moltiplicatore x${s.multiplier}`,
+      time: SUCCESS_BANNER_TIME,
+    };
     playSound(s, "success");
   } else {
     showMessage(s, "MISSIONE FALLITA", 4);

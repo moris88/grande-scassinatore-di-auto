@@ -1,4 +1,4 @@
-export type BannerKind = "wasted" | "busted" | "success";
+export type BannerKind = "wasted" | "busted" | "success" | "escaped";
 
 interface Props {
   kind: BannerKind;
@@ -10,6 +10,7 @@ const TITLES: Record<BannerKind, string> = {
   wasted: "SEI MORTO",
   busted: "ARRESTATO",
   success: "MISSIONE COMPIUTA!",
+  escaped: "HAI SEMINATO LA POLIZIA!",
 };
 
 /** Schermata a tutto schermo che si ingrandisce per evidenziare un evento */

@@ -56,6 +56,16 @@ export const PHONE_BOOTHS: Vec2[] = [
 
 export const SPRAY_SHOP: Rect = { x: 46, y: 16, w: 2, h: 2 };
 
+/** Parcheggi ricavati negli isolati, tutti affacciati su un marciapiede (h = 1: stalli lungo il
+ * marciapiede). Quelli coperti fanno da nascondiglio durante gli inseguimenti. */
+export const PARKING_LOTS: (Rect & { covered: boolean })[] = [
+  { x: 18, y: 5, w: 4, h: 3, covered: false },
+  { x: 55, y: 5, w: 4, h: 3, covered: true },
+  { x: 19, y: 52, w: 4, h: 3, covered: true },
+  { x: 33, y: 5, w: 6, h: 1, covered: false },
+  { x: 5, y: 28, w: 6, h: 1, covered: false },
+];
+
 /** Punti in tile */
 export const PLAYER_START: Vec2 = { x: 5, y: 4 };
 export const HOSPITAL: Vec2 = { x: 20, y: 27 };
@@ -121,6 +131,7 @@ export const buildCity = (): CityMap => {
   for (const l of LAKES) fill(tiles, l, Tile.Water);
   for (const p of PHONE_BOOTHS) tiles[idx(p.x, p.y)] = Tile.Phone;
   fill(tiles, SPRAY_SHOP, Tile.SprayShop);
+  for (const p of PARKING_LOTS) fill(tiles, p, p.covered ? Tile.ParkingCovered : Tile.Parking);
   return { tiles, lanes };
 };
 

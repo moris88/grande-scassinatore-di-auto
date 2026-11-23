@@ -13,8 +13,10 @@ export interface HudData {
   missionTitle: string | null;
   missionTime: number | null;
   message: string | null;
-  /** Ricompensa della missione appena compiuta (banner grande), null se non c'è */
-  successReward: number | null;
+  /** Banner grande in corso (missione compiuta / polizia seminata), null se non c'è */
+  banner: { kind: "success" | "escaped"; detail: string } | null;
+  /** Secondi di ricerca rimasti se la polizia ti ha perso di vista, null se ti vede o non ti cerca */
+  searchLeft: number | null;
   downReason: "wasted" | "busted" | null;
   gameOver: boolean;
 }
@@ -31,7 +33,8 @@ export const makeHud = (s: GameState): HudData => ({
   missionTitle: s.mission?.title ?? null,
   missionTime: s.mission ? Math.ceil(s.mission.timeLeft) : null,
   message: s.message?.text ?? null,
-  successReward: s.successBanner?.reward ?? null,
+  banner: s.banner ? { kind: s.banner.kind, detail: s.banner.detail } : null,
+  searchLeft: stars(s) > 0 && !s.seen ? Math.ceil(s.searchTime) : null,
   downReason: s.downReason,
   gameOver: s.gameOver,
 });

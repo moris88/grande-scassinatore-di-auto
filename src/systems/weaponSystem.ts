@@ -30,6 +30,7 @@ const BULLET_SPEED = 650;
 export const PUNCH_ANIM = 0.18;
 const PUNCH_DAMAGE = 50;
 const PUNCH_KNOCKBACK = 6;
+const COP_KILL_HEAT = 0.9;
 
 /** Uccide un pedone e applica le conseguenze se è stato il giocatore */
 export const killPed = (s: GameState, ped: Pedestrian, byPlayer: boolean): void => {
@@ -39,7 +40,8 @@ export const killPed = (s: GameState, ped: Pedestrian, byPlayer: boolean): void 
   scarePeds(s, ped.pos, 120);
   if (!byPlayer) return;
   s.money += 10 * s.multiplier;
-  crime(s, 0.35);
+  // Uccidere un agente è un reato molto più grave
+  crime(s, ped.role === "cop" ? COP_KILL_HEAT : 0.35);
 };
 
 /** Pugno (alterna destro e sinistro): 2 colpi stendono un pedone, che intanto arretra e scappa */
@@ -60,7 +62,7 @@ export const punch = (s: GameState): void => {
   const ky = Math.sin(p.angle) * PUNCH_KNOCKBACK;
   moveCircle(s.map, ped.pos, kx, ky, PED_RADIUS, blocksPeds);
   scarePeds(s, p.pos, 30);
-  crime(s, 0.05);
+  crime(s, ped.role === "cop" ? 0.3 : 0.05);
 };
 
 export const cycleWeapon = (s: GameState): void => {
@@ -110,7 +112,13 @@ export const updateBullets = (s: GameState, dt: number): void => {
       b.life = 0;
       continue;
     }
-    const ped = s.peds.find((q) => q.state !== "dead" && dist(q.pos, b.pos) < PED_RADIUS + 2);
+    // I colpi della polizia non feriscono gli agenti
+    const ped = s.peds.find(
+      (q) =>
+        q.state !== "dead" &&
+        (b.fromPlayer || q.role !== "cop") &&
+        dist(q.pos, b.pos) < PED_RADIUS + 2,
+    );
     if (ped) {
       killPed(s, ped, b.fromPlayer);
       b.life = 0;

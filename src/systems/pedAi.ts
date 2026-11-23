@@ -25,7 +25,8 @@ const nextWalkTarget = (s: GameState, p: Pedestrian): Vec2 | null => {
 /** Fa scappare i pedoni entro un raggio da un punto di pericolo */
 export const scarePeds = (s: GameState, from: Vec2, radius: number): void => {
   for (const p of s.peds) {
-    if (p.state === "dead" || dist(p.pos, from) > radius) continue;
+    // Gli agenti non scappano
+    if (p.state === "dead" || p.role === "cop" || dist(p.pos, from) > radius) continue;
     p.state = "flee";
     p.fleeTime = 3 + Math.random() * 2;
     p.angle = angleTo(from, p.pos);
@@ -56,6 +57,11 @@ export const updatePed = (s: GameState, p: Pedestrian, dt: number): void => {
     p.walkPhase += dt * 16;
     return;
   }
+  walkPed(s, p, dt);
+};
+
+/** Camminata tranquilla da una tile pedonale all'altra (pedoni e agenti di pattuglia) */
+export const walkPed = (s: GameState, p: Pedestrian, dt: number): void => {
   if (!p.target || dist(p.pos, p.target) < 4) p.target = nextWalkTarget(s, p);
   if (!p.target) return;
   p.angle = angleTo(p.pos, p.target);

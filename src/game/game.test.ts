@@ -35,7 +35,7 @@ describe("simulazione di gioco", () => {
     s.heat = 3.5;
     const input = new Input();
     for (let i = 0; i < 60 * 30 && !s.downReason; i++) {
-      s.heatCooldown = 0;
+      s.searchTime = 99; // la polizia non rinuncia durante il test
       updateGame(s, input, 1 / 60);
     }
     expect(stars(s) >= 3 || s.downReason !== null).toBe(true);

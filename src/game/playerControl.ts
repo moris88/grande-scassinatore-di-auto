@@ -5,7 +5,7 @@ import { applyImpactDamage, exitPoint, forwardSpeed, updateCarPhysics } from "..
 import { createPed } from "../entities/pedestrian";
 import { updatePlayerOnFoot } from "../entities/player";
 import type { Car } from "../entities/types";
-import { crime } from "../systems/wantedSystem";
+import { crime, loseIdentity } from "../systems/wantedSystem";
 import { blocksPeds } from "../world/tiles";
 import { type GameState, playSound, showMessage } from "./state";
 
@@ -26,6 +26,8 @@ const nearestCar = (s: GameState): Car | null => {
 };
 
 const enterCar = (s: GameState, car: Car): void => {
+  // Cambiare veicolo senza essere visto fa perdere le tracce alla polizia
+  loseIdentity(s);
   if (car.driver === "ai") {
     // Il conducente viene buttato fuori e scappa
     const ped = createPed(exitPoint(car));

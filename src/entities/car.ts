@@ -1,10 +1,10 @@
-import { CAR_LEN, carHitsWall } from "../engine/collision";
+import { carHitsWall } from "../engine/collision";
 import { type Vec2, clamp, pick } from "../engine/math";
 import type { CityMap } from "../world/cityMap";
 import { Dir, blocksCars } from "../world/tiles";
 import type { Car } from "./types";
+import { VEHICLES, type VehicleKind } from "./vehicles";
 
-export const CAR_MAX_SPEED = 280;
 const ACCEL = 220;
 const BRAKE = 420;
 const MAX_REVERSE = 90;
@@ -32,16 +32,23 @@ export interface CarControls {
 
 let nextId = 1;
 
-export const createCar = (pos: Vec2, angle: number, police = false): Car => ({
+export const createCar = (
+  pos: Vec2,
+  angle: number,
+  police = false,
+  kind: VehicleKind = "car",
+): Car => ({
   id: nextId++,
   pos: { ...pos },
   vel: { x: 0, y: 0 },
   angle,
   angularVel: 0,
-  health: police ? 140 : 100,
-  color: police ? "#1b2a4a" : pick(CIVIL_COLORS),
+  health: police ? 140 : VEHICLES[kind].health,
+  color: police ? "#1b2a4a" : kind === "ambulance" ? "#f4f4f4" : pick(CIVIL_COLORS),
+  kind,
   police,
   driver: "none",
+  route: null,
   laneDir: Dir.E,
   aiTarget: null,
   aiNext: null,
@@ -57,15 +64,20 @@ export const createCar = (pos: Vec2, angle: number, police = false): Car => ({
 export const forwardSpeed = (car: Car): number =>
   car.vel.x * Math.cos(car.angle) + car.vel.y * Math.sin(car.angle);
 
+/** Il veicolo tocca un muro nella posizione/angolo indicati (con le sue misure) */
+const hitsWall = (map: CityMap, car: Car, pos: Vec2, angle: number): boolean =>
+  carHitsWall(map, pos, angle, blocksCars, VEHICLES[car.kind].len, VEHICLES[car.kind].wid);
+
 /** Aggiorna la fisica arcade. Ritorna la velocità d'impatto contro un muro (0 se nessuno) */
 export const updateCarPhysics = (car: Car, ctl: CarControls, dt: number, map: CityMap): number => {
+  const maxSpeed = VEHICLES[car.kind].maxSpeed;
   const cos = Math.cos(car.angle);
   const sin = Math.sin(car.angle);
   let vf = car.vel.x * cos + car.vel.y * sin;
   let vl = -car.vel.x * sin + car.vel.y * cos;
 
   if (ctl.throttle > 0) {
-    vf = vf < -5 ? vf + BRAKE * dt : Math.min(CAR_MAX_SPEED, vf + ACCEL * ctl.throttle * dt);
+    vf = vf < -5 ? vf + BRAKE * dt : Math.min(maxSpeed, vf + ACCEL * ctl.throttle * dt);
   } else if (ctl.throttle < 0) {
     vf = vf > 5 ? vf - BRAKE * dt : Math.max(-MAX_REVERSE, vf - ACCEL * 0.6 * dt);
   } else {
@@ -78,7 +90,7 @@ export const updateCarPhysics = (car: Car, ctl: CarControls, dt: number, map: Ci
   const turnFactor = clamp(vf / FULL_TURN_SPEED, -1, 1) * (ctl.handbrake ? 1.4 : 1);
   car.angularVel = ctl.steer * TURN_RATE * turnFactor;
   const newAngle = car.angle + car.angularVel * dt;
-  if (!carHitsWall(map, car.pos, newAngle, blocksCars)) car.angle = newAngle;
+  if (!hitsWall(map, car, car.pos, newAngle)) car.angle = newAngle;
 
   const nc = Math.cos(car.angle);
   const ns = Math.sin(car.angle);
@@ -92,18 +104,18 @@ export const updateCarPhysics = (car: Car, ctl: CarControls, dt: number, map: Ci
 export const moveCar = (car: Car, dt: number, map: CityMap): number => {
   const nx = car.pos.x + car.vel.x * dt;
   const ny = car.pos.y + car.vel.y * dt;
-  if (!carHitsWall(map, { x: nx, y: ny }, car.angle, blocksCars)) {
+  if (!hitsWall(map, car, { x: nx, y: ny }, car.angle)) {
     car.pos.x = nx;
     car.pos.y = ny;
     return 0;
   }
   const speed = Math.hypot(car.vel.x, car.vel.y);
-  if (!carHitsWall(map, { x: nx, y: car.pos.y }, car.angle, blocksCars)) {
+  if (!hitsWall(map, car, { x: nx, y: car.pos.y }, car.angle)) {
     car.pos.x = nx;
     car.vel.y *= -0.3;
     return Math.abs(car.vel.y / 0.3);
   }
-  if (!carHitsWall(map, { x: car.pos.x, y: ny }, car.angle, blocksCars)) {
+  if (!hitsWall(map, car, { x: car.pos.x, y: ny }, car.angle)) {
     car.pos.y = ny;
     car.vel.x *= -0.3;
     return Math.abs(car.vel.x / 0.3);
@@ -119,7 +131,11 @@ export const applyImpactDamage = (car: Car, impact: number): void => {
 };
 
 /** Punto in cui il giocatore esce dall'auto (lato sinistro) */
-export const exitPoint = (car: Car): Vec2 => ({
-  x: car.pos.x + Math.sin(car.angle) * 16 - Math.cos(car.angle) * (CAR_LEN / 4),
-  y: car.pos.y - Math.cos(car.angle) * 16 - Math.sin(car.angle) * (CAR_LEN / 4),
-});
+export const exitPoint = (car: Car): Vec2 => {
+  const { len, wid } = VEHICLES[car.kind];
+  const side = wid / 2 + 9;
+  return {
+    x: car.pos.x + Math.sin(car.angle) * side - Math.cos(car.angle) * (len / 4),
+    y: car.pos.y - Math.cos(car.angle) * side - Math.sin(car.angle) * (len / 4),
+  };
+};

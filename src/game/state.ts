@@ -29,7 +29,12 @@ export interface GameState {
   camera: Camera;
   /** Livello di ricercato continuo 0..4 (le stelle sono la parte intera arrotondata) */
   heat: number;
-  heatCooldown: number;
+  /** La polizia ti vede in questo momento */
+  seen: boolean;
+  /** Ultima posizione in cui la polizia ti ha visto */
+  lastSeen: Vec2 | null;
+  /** Secondi di ricerca rimasti prima che la polizia rinunci (scorrono solo se non ti vede) */
+  searchTime: number;
   money: number;
   multiplier: number;
   lives: number;
@@ -37,8 +42,10 @@ export interface GameState {
   /** Cabina usata per ultima: non riattiva subito una missione */
   phoneCooldown: number;
   message: { text: string; time: number } | null;
-  /** Schermata grande "MISSIONE COMPIUTA" (ricompensa e secondi rimanenti) */
-  successBanner: { reward: number; time: number } | null;
+  /** Schermata grande: missione compiuta o polizia seminata */
+  banner: { kind: "success" | "escaped"; detail: string; time: number } | null;
+  /** Intervento dell'ambulanza in corso (uno alla volta); treat = secondi di soccorso rimasti */
+  ambulanceJob: { car: Car; ped: Pedestrian; treat: number; time: number } | null;
   /** Schermata "MORTO"/"ARRESTATO" prima del respawn */
   downTime: number;
   downReason: "wasted" | "busted" | null;

@@ -43,11 +43,11 @@ export const moveCircle = (
 };
 
 /** Punti di campionamento del perimetro dell'auto (angoli + metà lati lunghi) */
-export const carSamplePoints = (pos: Vec2, angle: number): Vec2[] => {
+export const carSamplePoints = (pos: Vec2, angle: number, len = CAR_LEN, wid = CAR_WID): Vec2[] => {
   const c = Math.cos(angle);
   const s = Math.sin(angle);
-  const hl = CAR_LEN / 2;
-  const hw = CAR_WID / 2;
+  const hl = len / 2;
+  const hw = wid / 2;
   const local: [number, number][] = [
     [hl, hw],
     [hl, -hw],
@@ -66,7 +66,9 @@ export const carHitsWall = (
   pos: Vec2,
   angle: number,
   blocks: (t: Tile) => boolean,
+  len = CAR_LEN,
+  wid = CAR_WID,
 ): boolean =>
-  carSamplePoints(pos, angle).some((p) =>
+  carSamplePoints(pos, angle, len, wid).some((p) =>
     blocks(tileAt(map, Math.floor(p.x / TILE), Math.floor(p.y / TILE))),
   );

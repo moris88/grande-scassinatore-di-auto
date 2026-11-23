@@ -1,5 +1,6 @@
 import type { Vec2 } from "../engine/math";
 import type { Dir } from "../world/tiles";
+import type { VehicleKind } from "./vehicles";
 
 export type WeaponKind = "fists" | "pistol" | "smg";
 
@@ -11,8 +12,11 @@ export interface Car {
   angularVel: number;
   health: number;
   color: string;
+  kind: VehicleKind;
   police: boolean;
   driver: "player" | "ai" | "none";
+  /** Percorso sulle corsie da seguire (ambulanze, volanti in ricerca); null = giro libero */
+  route: Vec2[] | null;
   /** Corsia attuale per l'IA del traffico */
   laneDir: Dir;
   /** Tile verso cui l'IA si sta dirigendo */
@@ -44,6 +48,10 @@ export interface Pedestrian {
   deadTime: number;
   /** Salute (i pugni tolgono 50) */
   health: number;
+  /** Civile oppure agente di polizia a piedi */
+  role: "civil" | "cop";
+  /** Secondi prima del prossimo colpo (solo agenti) */
+  shootCooldown: number;
 }
 
 export interface Player {

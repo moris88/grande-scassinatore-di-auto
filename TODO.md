@@ -56,7 +56,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto
 
 ## Verifica finale
 - [x] Biome pulito
-- [x] Test verdi (18 test, incluse simulazioni headless del gioco)
+- [x] Test verdi (28 test, incluse simulazioni headless del gioco)
 - [x] `npm run build` senza errori
 - [ ] Prova di gioco nel browser (da fare a mano: `npm run dev`)
 
@@ -77,14 +77,14 @@ Decisioni prese:
 - Mafia: auto della mafia che inseguono e sparano; si vince sopravvivendo per un tempo o raggiungendo un punto sicuro; nascondigli (vicoli/garage) dove restando fermi qualche secondo ti perdono; se ti prendono perdi una vita.
 
 - [x] Risolvere il problema delle curve per le auto (lotto A: svolta pianificata con una tile d'anticipo, raggio minimo di sterzata ridotto da ~39 a ~21 px sotto i 60 px/s, retromarcia se incastrate fuori strada; campioni fuori strada dal 17% a <0,2%)
-- [ ] inserire treni, camion, autobus nel traffico
-- [ ] inserire le ambulanze per i pedoni che vengono investiti o uccisi
+- [~] inserire treni, camion, autobus nel traffico (lotto B: camion e autobus fatti, con misure, massa, velocità e resistenza propri; treni nel lotto D)
+- [x] inserire le ambulanze per i pedoni che vengono investiti o uccisi (lotto B: l'ambulanza arriva a sirene accese seguendo il percorso sulle corsie, ignora i semafori, si ferma 3 s e rianima i pedoni a terra vicini)
 - [ ] inserire elicotteri per il traffico aereo
 - [x] rivedere i telefoni per le missioni (lotto A: cabina rossa con vetri, tetto a padiglione e insegna TEL; con missione disponibile la lampada sul tetto si accende con alone pulsante)
 - [x] se non ho armi da fuoco, il personaggio deve poter dare i pugni e uccidere i nemici corpo a corpo (lotto A: jab alternato destro/sinistro con sprite dedicato, 2 pugni stendono un pedone, spinta all'indietro, suono d'impatto)
 - [ ] inserire animazioni che entra in macchina e esce dalla macchina, (possibilità di scivolare sopra la macchina ed entrare in auto)
 - [ ] possibilità di entrare nei palazzi, per missioni di negozi e uffici
-- [ ] possibilità di vedere agenti della polizia all'interno della città e che se sono inseguito che escono dalle autoi per inseguire il giocatore
+- [x] possibilità di vedere agenti della polizia all'interno della città e che se sono inseguito che escono dalle autoi per inseguire il giocatore (lotto B: 3 agenti di pattuglia, più agenti con più stelle; scendono dalla volante quando è vicina e lenta, corrono, sparano da 2 stelle, arrestano)
 - [x] Bug relativi alle auto in coda, come il blocco del traffico o il comportamento irregolare nelle curve (vedi immagine Screenshot 2026-11-23 200115.png) (lotto A: le curve a 90° agli angoli non hanno più semaforo né linea d'arresto, solo gli incroci a T e a croce; vedi anche il fix delle curve)
 - [ ] Introdurre missioni dove sei tu colui che deve essere inseguito o catturato dalla mafia, con possibilità di fuga e nascondigli
 - [ ] Inserire il negozio di armi, con possibilità di acquistare armi e munizioni (le armi devono essere presenti solo nei negozi di armi, non in giro per la città: lotto E rimuove le casse armi dalla mappa)
@@ -92,6 +92,6 @@ Decisioni prese:
 - [ ] Inserire il negozio di veicoli, con possibilità di acquistare e personalizzare auto
 - [ ] Inserire il negozio di alimentari, con possibilità di acquistare cibo e bevande (per ripristinare salute o energia)
 - [x] Il gioco si chiama "Grande Scassinatore di Auto", inseriscilo nel menu iniziale (lotto A: titolo grande nel menu e nella scheda del browser)
-- [ ] Aggiungi i parcheggi, dove sono parcheggiate le auto (lotto B)
-- [ ] Se scappi dalla polizia, introdurre un sistema di inseguimento con possibilità di nascondersi o cambiare veicolo, se dopo un tot di tempo che la polizia non ti trova azzerare l'inseguimento, (mostrare un messaggio di fine inseguimento, e le stelline accumulate più sono più agenti ti inseguono, aumentano se continui a commettere crimini) (lotto B, insieme agli agenti a piedi)
+- [x] Aggiungi i parcheggi, dove sono parcheggiate le auto (lotto B: 3 piazzali, di cui 2 coperti, e 2 file di stalli lungo i marciapiedi; auto vuote rubabili senza reato, gli stalli si ripopolano fuori dalla vista)
+- [x] Se scappi dalla polizia, introdurre un sistema di inseguimento con possibilità di nascondersi o cambiare veicolo, se dopo un tot di tempo che la polizia non ti trova azzerare l'inseguimento, (mostrare un messaggio di fine inseguimento, e le stelline accumulate più sono più agenti ti inseguono, aumentano se continui a commettere crimini) (lotto B: la polizia deve vederti davvero, gli edifici bloccano la vista; se ti perde va all'ultimo punto noto e parte la ricerca di 10 s per stella, con le stelle che lampeggiano e il conto alla rovescia; nei parcheggi coperti e in carrozzeria la ricerca scorre al doppio; cambiare veicolo senza essere visto la riduce a 3 s; alla fine azzera le stelle col banner "HAI SEMINATO LA POLIZIA!")
 - [x] Inserisci la schermata di quando vieni ucciso e quando passi una missione con successo (lotto A: banner a tutto schermo che si ingrandisce con rimbalzo; rosso per morte/arresto, verde per missione compiuta con ricompensa e moltiplicatore)

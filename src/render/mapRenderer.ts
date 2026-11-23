@@ -123,6 +123,21 @@ const drawPhone = (map: CityMap, tx: number, ty: number, px: Px): void => {
   px(14, 14, 4, 4, "#5a4a1a");
 };
 
+/** Asfalto del parcheggio con le strisce bianche degli stalli (una tile = uno stallo) */
+const drawParking = (map: CityMap, tx: number, ty: number, px: Px): void => {
+  const covered = tileAt(map, tx, ty) === Tile.ParkingCovered;
+  px(0, 0, TILE, TILE, covered ? "#4a4842" : "#3d3d42");
+  for (let i = 0; i < 6; i++)
+    px(Math.floor(hash(tx, ty, i) * 31), Math.floor(hash(ty, tx, i) * 31), 1, 1, "#4c4c52");
+  const same = (dx: number, dy: number): boolean =>
+    tileAt(map, tx + dx, ty + dy) === tileAt(map, tx, ty);
+  // Stalli: linee sui lati verso altri stalli, bordo giallo verso l'esterno
+  if (same(-1, 0)) px(0, 3, 1, TILE - 6, "#e8e8e8");
+  if (same(1, 0)) px(TILE - 1, 3, 1, TILE - 6, "#e8e8e8");
+  if (!same(0, -1) && tileAt(map, tx, ty - 1) === Tile.Building) px(0, 0, TILE, 2, "#e1b12c");
+  if (!same(0, 1) && tileAt(map, tx, ty + 1) === Tile.Building) px(0, TILE - 2, TILE, 2, "#e1b12c");
+};
+
 const drawSpray = (tx: number, ty: number, px: Px): void => {
   px(0, 0, TILE, TILE, "#4a4a4a");
   for (let i = 0; i < TILE; i += 8) px(i, (tx + ty) % 2 === 0 ? 0 : 30, 4, 2, "#e1b12c");
@@ -151,6 +166,7 @@ export const renderMap = (map: CityMap): HTMLCanvasElement => {
       else if (t === Tile.Grass) drawGrass(tx, ty, px);
       else if (t === Tile.Water) drawWater(tx, ty, px);
       else if (t === Tile.Phone) drawPhone(map, tx, ty, px);
+      else if (t === Tile.Parking || t === Tile.ParkingCovered) drawParking(map, tx, ty, px);
       else drawSpray(tx, ty, px);
     }
   }

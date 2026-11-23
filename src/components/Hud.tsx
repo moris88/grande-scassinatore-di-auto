@@ -17,13 +17,14 @@ export function Hud({ hud }: Props) {
         <div>Vite: {"♥".repeat(Math.max(0, hud.lives))}</div>
       </div>
       <div className="hud-top-right">
-        <div className="hud-stars">
+        <div className={hud.searchLeft !== null ? "hud-stars searching" : "hud-stars"}>
           {[1, 2, 3, 4].map((n) => (
             <span key={n} className={n <= hud.stars ? "star on" : "star"}>
               ★
             </span>
           ))}
         </div>
+        {hud.searchLeft !== null && <div className="hud-search">Ti cercano: {hud.searchLeft}s</div>}
         <div>Salute: {hud.health}</div>
         {hud.carHealth !== null && <div>Auto: {hud.carHealth}</div>}
         <div>
@@ -38,11 +39,8 @@ export function Hud({ hud }: Props) {
       )}
       <MissionPopup message={hud.message} />
       {hud.downReason && !hud.gameOver && <EventBanner kind={hud.downReason} />}
-      {!hud.downReason && hud.successReward !== null && (
-        <EventBanner
-          kind="success"
-          detail={`+$${hud.successReward.toLocaleString("it-IT")} · moltiplicatore x${hud.multiplier}`}
-        />
+      {!hud.downReason && hud.banner && (
+        <EventBanner kind={hud.banner.kind} detail={hud.banner.detail} />
       )}
     </div>
   );

@@ -3,15 +3,36 @@ import type { CarControls } from "../entities/car";
 import { forwardSpeed } from "../entities/car";
 import type { Car } from "../entities/types";
 import { type GameState, playSound, stars } from "../game/state";
+import { worldToTile } from "../world/cityMap";
+import { findLaneRoute, nearestLaneTile } from "../world/laneRoute";
+import { dropCops } from "./copAi";
 import { steerTowards, trafficControls } from "./trafficAi";
 
 const CHASE_SPEED = 230;
 const SHOOT_RANGE = 220;
+/** Volante più vicina di così e quasi ferma: gli agenti scendono */
+const DROP_DIST = 110;
+const IDLE: CarControls = { throttle: 0, steer: 0, handbrake: true };
 
-/** Le volanti pattugliano come il traffico, inseguono quando sei ricercato */
+/** Senza vista sul giocatore: percorso fino all'ultimo punto noto, poi pattuglia la zona */
+const searchControls = (car: Car, s: GameState): CarControls => {
+  if (s.lastSeen && car.route === null) {
+    const goal = nearestLaneTile(s.map, worldToTile(s.lastSeen));
+    const from = car.aiTarget ?? worldToTile(car.pos);
+    car.route = (goal && findLaneRoute(s.map, from, car.laneDir, goal)) || [];
+  }
+  return trafficControls(car, s);
+};
+
+/** Le volanti pattugliano come il traffico, inseguono quando ti vedono, ti cercano altrimenti */
 export const policeControls = (car: Car, s: GameState, dt: number): CarControls => {
   car.sirenPhase += dt;
-  if (stars(s) === 0) return trafficControls(car, s);
+  if (stars(s) === 0) {
+    car.route = null;
+    return trafficControls(car, s);
+  }
+  if (!s.seen) return searchControls(car, s);
+  car.route = null;
 
   const target = s.player.car ? s.player.car.pos : s.player.pos;
   const d = dist(car.pos, target);
@@ -28,6 +49,9 @@ export const policeControls = (car: Car, s: GameState, dt: number): CarControls 
     car.reverseTime = 0.8;
   }
 
+  // Vicina e lenta: gli agenti scendono a inseguirti a piedi
+  if (d < DROP_DIST && Math.abs(vf) < 30 && dropCops(s, car)) return IDLE;
+
   // Vicino al giocatore a piedi: si ferma per arrestarlo
   if (!s.player.car && d < 45) return { throttle: vf > 5 ? -1 : 0, steer: 0, handbrake: true };
 
@@ -36,7 +60,7 @@ export const policeControls = (car: Car, s: GameState, dt: number): CarControls 
 
 /** Con 3+ stelle gli agenti sparano dal finestrino */
 export const policeShoot = (car: Car, s: GameState, dt: number): void => {
-  if (stars(s) < 3 || car.dead) return;
+  if (stars(s) < 3 || car.dead || !s.seen || car.driver !== "ai") return;
   const target = s.player.car ? s.player.car.pos : s.player.pos;
   if (dist(car.pos, target) > SHOOT_RANGE) return;
   const before = Math.floor((car.sirenPhase - dt) / 1.1);

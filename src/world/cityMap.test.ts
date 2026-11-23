@@ -4,6 +4,7 @@ import {
   HOSPITAL,
   MAP_H,
   MAP_W,
+  PARKING_LOTS,
   PHONE_BOOTHS,
   PLAYER_START,
   POLICE_STATION,
@@ -26,6 +27,20 @@ describe("cityMap", () => {
     for (const p of [PLAYER_START, HOSPITAL, POLICE_STATION, ...WEAPON_SPAWNS.map((w) => w.tile)])
       expect(isWalkable(tileAt(map, p.x, p.y))).toBe(true);
     for (const b of PHONE_BOOTHS) expect(tileAt(map, b.x, b.y)).toBe(Tile.Phone);
+  });
+
+  it("i parcheggi sono interi e accessibili da un marciapiede", () => {
+    for (const p of PARKING_LOTS) {
+      const kind = p.covered ? Tile.ParkingCovered : Tile.Parking;
+      let sidewalk = false;
+      for (let y = p.y - 1; y <= p.y + p.h; y++)
+        for (let x = p.x - 1; x <= p.x + p.w; x++) {
+          const inside = x >= p.x && x < p.x + p.w && y >= p.y && y < p.y + p.h;
+          if (inside) expect(tileAt(map, x, y)).toBe(kind);
+          else if (tileAt(map, x, y) === Tile.Sidewalk) sidewalk = true;
+        }
+      expect(sidewalk).toBe(true);
+    }
   });
 
   it("ogni corsia ha sempre una tile successiva valida", () => {
