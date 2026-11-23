@@ -4,9 +4,11 @@ import { type GameState, stars } from "../game/state";
 import { PHONE_BOOTHS, tileCenter } from "../world/cityMap";
 import { dirVector } from "../world/tiles";
 import { lightFor, stopLines } from "../world/trafficLights";
+import { drawHelicopters } from "./helicopterRenderer";
 import { drawMinimap } from "./minimap";
 import { drawParkingRoofs } from "./parkingRoofs";
-import { copSprite, deadPedSprite, pedSprite, pickupSprite, punchSprite } from "./sprites";
+import { drawPlayer } from "./playerRenderer";
+import { copSprite, deadPedSprite, pedSprite, pickupSprite } from "./sprites";
 import { vehicleSprite } from "./vehicleSprites";
 
 const drawRotated = (
@@ -169,16 +171,9 @@ export const renderGame = (
       );
 
   const pl = s.player;
-  if (!pl.car && !s.downReason) {
-    const sprite =
-      pl.punchTime > 0
-        ? punchSprite("#4a6b2a", pl.punchLeft)
-        : pedSprite("#4a6b2a", Math.floor(pl.walkPhase) % 2);
-    drawRotated(g, sprite, pl.pos, pl.angle);
-  }
-  if (!pl.car && s.downReason === "wasted")
-    drawRotated(g, deadPedSprite("#4a6b2a"), pl.pos, pl.angle);
+  drawPlayer(g, s, false);
   for (const c of s.cars) if (!c.dead) drawCar(g, s, c);
+  drawPlayer(g, s, true);
   drawParkingRoofs(g, s);
 
   g.fillStyle = "#ffe98a";
@@ -190,6 +185,7 @@ export const renderGame = (
     g.arc(e.pos.x, e.pos.y, r, 0, Math.PI * 2);
     g.fill();
   }
+  drawHelicopters(g, s);
   if (!s.downReason) drawMissionArrow(g, s, pl.car ? pl.car.pos : pl.pos);
   g.restore();
   drawMinimap(g, s);

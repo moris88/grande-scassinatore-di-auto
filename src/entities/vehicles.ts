@@ -18,7 +18,7 @@ export const VEHICLES: Record<VehicleKind, VehicleSpec> = {
   car: { len: 28, wid: 14, mass: 1, maxSpeed: 280, cruise: 95, health: 100 },
   ambulance: { len: 32, wid: 15, mass: 1.4, maxSpeed: 260, cruise: 110, health: 130 },
   truck: { len: 40, wid: 16, mass: 2.5, maxSpeed: 200, cruise: 75, health: 180 },
-  bus: { len: 48, wid: 16, mass: 3, maxSpeed: 190, cruise: 70, health: 200 },
+  bus: { len: 44, wid: 16, mass: 3, maxSpeed: 190, cruise: 70, health: 200 },
 };
 
 /** Cerchi di collisione distribuiti lungo il veicolo (uno per le auto, più per i mezzi lunghi) */

@@ -1,6 +1,7 @@
 import { updateCamera } from "../engine/camera";
 import type { Input } from "../engine/input";
 import { createPlayer } from "../entities/player";
+import { updateAirTraffic } from "../systems/airTraffic";
 import { updateAmbulances } from "../systems/ambulanceSystem";
 import { updateEntityCollisions } from "../systems/collisionSystem";
 import { updateCop } from "../systems/copAi";
@@ -33,6 +34,7 @@ export const createGame = (): GameState => {
     peds: [],
     bullets: [],
     explosions: [],
+    helis: [],
     pickups: WEAPON_SPAWNS.map((w) => ({ pos: tileCenter(w.tile), weapon: w.weapon, respawn: 0 })),
     camera: { pos: { ...start }, zoom: 2 },
     heat: 0,
@@ -62,6 +64,7 @@ export const createGame = (): GameState => {
 const knockDown = (s: GameState, reason: "wasted" | "busted"): void => {
   s.downReason = reason;
   s.downTime = DOWN_TIME;
+  s.player.transition = null;
   if (s.player.car) {
     s.player.car.driver = "none";
     s.player.car = null;
@@ -101,7 +104,7 @@ export const updateGame = (s: GameState, input: Input, dt: number): void => {
     if (s.downTime <= 0) respawn(s);
   } else {
     updatePlayerControl(s, input, dt);
-    updateWeapons(s, input, dt);
+    if (!s.player.transition) updateWeapons(s, input, dt);
   }
 
   updateCars(s, dt);
@@ -116,6 +119,7 @@ export const updateGame = (s: GameState, input: Input, dt: number): void => {
   updateAmbulances(s, dt);
   updateSpawns(s);
   updateParking(s);
+  updateAirTraffic(s, dt);
 
   if (!s.downReason) {
     if (s.player.health <= 0) knockDown(s, "wasted");

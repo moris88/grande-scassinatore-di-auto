@@ -77,7 +77,8 @@ export const updateEntityCollisions = (s: GameState): void => {
     }
     // Giocatore a piedi investito
     const pl = s.player;
-    if (!pl.car && car.driver !== "player" && touches(pl.pos)) {
+    // Durante l'entrata/uscita (scivolata sul cofano) il giocatore non viene urtato
+    if (!pl.car && !pl.transition && car.driver !== "player" && touches(pl.pos)) {
       if (speed > KILL_SPEED) pl.health -= speed * 0.25;
       const a = Math.atan2(pl.pos.y - car.pos.y, pl.pos.x - car.pos.x);
       const np = { x: pl.pos.x + Math.cos(a) * 6, y: pl.pos.y + Math.sin(a) * 6 };

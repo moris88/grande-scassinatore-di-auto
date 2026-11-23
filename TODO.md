@@ -56,7 +56,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto
 
 ## Verifica finale
 - [x] Biome pulito
-- [x] Test verdi (28 test, incluse simulazioni headless del gioco)
+- [x] Test verdi (32 test, incluse simulazioni headless del gioco)
 - [x] `npm run build` senza errori
 - [ ] Prova di gioco nel browser (da fare a mano: `npm run dev`)
 
@@ -79,10 +79,10 @@ Decisioni prese:
 - [x] Risolvere il problema delle curve per le auto (lotto A: svolta pianificata con una tile d'anticipo, raggio minimo di sterzata ridotto da ~39 a ~21 px sotto i 60 px/s, retromarcia se incastrate fuori strada; campioni fuori strada dal 17% a <0,2%)
 - [~] inserire treni, camion, autobus nel traffico (lotto B: camion e autobus fatti, con misure, massa, velocità e resistenza propri; treni nel lotto D)
 - [x] inserire le ambulanze per i pedoni che vengono investiti o uccisi (lotto B: l'ambulanza arriva a sirene accese seguendo il percorso sulle corsie, ignora i semafori, si ferma 3 s e rianima i pedoni a terra vicini)
-- [ ] inserire elicotteri per il traffico aereo
+- [x] inserire elicotteri per il traffico aereo (lotto C: 2 elicotteri civili che attraversano la zona visibile, disegnati sopra a tutto con ombra a terra e rotore animato; solo grafici)
 - [x] rivedere i telefoni per le missioni (lotto A: cabina rossa con vetri, tetto a padiglione e insegna TEL; con missione disponibile la lampada sul tetto si accende con alone pulsante)
 - [x] se non ho armi da fuoco, il personaggio deve poter dare i pugni e uccidere i nemici corpo a corpo (lotto A: jab alternato destro/sinistro con sprite dedicato, 2 pugni stendono un pedone, spinta all'indietro, suono d'impatto)
-- [ ] inserire animazioni che entra in macchina e esce dalla macchina, (possibilità di scivolare sopra la macchina ed entrare in auto)
+- [x] inserire animazioni che entra in macchina e esce dalla macchina, (possibilità di scivolare sopra la macchina ed entrare in auto) (lotto C: con E si cammina alla portiera del guidatore; dal lato opposto si scivola sul cofano; l'autista si blocca mentre ti avvicini; scendendo si esce dalla portiera libera; comandi bloccati durante l'animazione; raggio di entrata adattato a camion e autobus)
 - [ ] possibilità di entrare nei palazzi, per missioni di negozi e uffici
 - [x] possibilità di vedere agenti della polizia all'interno della città e che se sono inseguito che escono dalle autoi per inseguire il giocatore (lotto B: 3 agenti di pattuglia, più agenti con più stelle; scendono dalla volante quando è vicina e lenta, corrono, sparano da 2 stelle, arrestano)
 - [x] Bug relativi alle auto in coda, come il blocco del traffico o il comportamento irregolare nelle curve (vedi immagine Screenshot 2026-11-23 200115.png) (lotto A: le curve a 90° agli angoli non hanno più semaforo né linea d'arresto, solo gli incroci a T e a croce; vedi anche il fix delle curve)

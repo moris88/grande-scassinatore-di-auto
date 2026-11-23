@@ -67,6 +67,29 @@ export interface Player {
   punchTime: number;
   /** Il prossimo/ultimo pugno è col braccio sinistro (si alternano) */
   punchLeft: boolean;
+  /** Animazione di entrata/uscita dall'auto in corso (comandi bloccati) */
+  transition: CarTransition | null;
+}
+
+export interface CarTransition {
+  kind: "enter" | "exit";
+  car: Car;
+  /** Tappe da raggiungere, in coordinate locali dell'auto (x avanti, y a destra) */
+  path: Vec2[];
+  /** Indici delle tappe in cui si scivola sul cofano (giocatore disegnato sopra l'auto) */
+  slideSteps: number[];
+  /** Secondi trascorsi nella fase finale "sale in auto" (0 finché cammina) */
+  getIn: number;
+}
+
+/** Elicottero del traffico aereo: vola sopra la città, non collide con niente */
+export interface Helicopter {
+  pos: Vec2;
+  vel: Vec2;
+  angle: number;
+  /** Angolo del rotore (gira continuamente) */
+  rotor: number;
+  color: string;
 }
 
 export interface Bullet {

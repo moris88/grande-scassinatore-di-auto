@@ -1,23 +1,20 @@
-import { PED_RADIUS, circleBlocked } from "../engine/collision";
 import type { Input } from "../engine/input";
 import { dist } from "../engine/math";
-import { applyImpactDamage, exitPoint, forwardSpeed, updateCarPhysics } from "../entities/car";
-import { createPed } from "../entities/pedestrian";
+import { applyImpactDamage, forwardSpeed, updateCarPhysics } from "../entities/car";
 import { updatePlayerOnFoot } from "../entities/player";
 import type { Car } from "../entities/types";
-import { crime, loseIdentity } from "../systems/wantedSystem";
-import { blocksPeds } from "../world/tiles";
-import { type GameState, playSound, showMessage } from "./state";
+import { enterRange, startEnter, startExit, updateTransition } from "./carTransition";
+import { type GameState, playSound } from "./state";
 
-const ENTER_RANGE = 30;
 const MAX_EXIT_SPEED = 70;
 
+/** Veicolo più vicino entro il raggio d'entrata (che dipende dalla sua lunghezza) */
 const nearestCar = (s: GameState): Car | null => {
   let best: Car | null = null;
-  let bestD = ENTER_RANGE;
+  let bestD = Number.POSITIVE_INFINITY;
   for (const c of s.cars) {
     const d = dist(c.pos, s.player.pos);
-    if (!c.dead && c.health > 0 && d < bestD) {
+    if (!c.dead && c.health > 0 && d < enterRange(c) && d < bestD) {
       best = c;
       bestD = d;
     }
@@ -25,41 +22,19 @@ const nearestCar = (s: GameState): Car | null => {
   return best;
 };
 
-const enterCar = (s: GameState, car: Car): void => {
-  // Cambiare veicolo senza essere visto fa perdere le tracce alla polizia
-  loseIdentity(s);
-  if (car.driver === "ai") {
-    // Il conducente viene buttato fuori e scappa
-    const ped = createPed(exitPoint(car));
-    ped.state = "flee";
-    ped.fleeTime = 4;
-    s.peds.push(ped);
-    crime(s, car.police ? 1 : 0.1);
-  }
-  car.driver = "player";
-  s.player.car = car;
-  if (car.police) showMessage(s, "Hai rubato una volante!", 2);
-};
-
-const exitCar = (s: GameState, car: Car): void => {
-  const p = exitPoint(car);
-  const alt = { x: 2 * car.pos.x - p.x, y: 2 * car.pos.y - p.y };
-  const spot = [p, alt].find((q) => !circleBlocked(s.map, q, PED_RADIUS, blocksPeds));
-  if (!spot) return;
-  car.driver = "none";
-  s.player.car = null;
-  s.player.pos = { ...spot };
-  s.player.angle = car.angle;
-};
-
 export const updatePlayerControl = (s: GameState, input: Input, dt: number): void => {
   const pl = s.player;
+  // Durante l'animazione di entrata/uscita i comandi sono bloccati
+  if (updateTransition(s, dt)) return;
   if (input.wasPressed("KeyE", "Enter")) {
     if (pl.car) {
-      if (Math.abs(forwardSpeed(pl.car)) < MAX_EXIT_SPEED) exitCar(s, pl.car);
+      if (Math.abs(forwardSpeed(pl.car)) < MAX_EXIT_SPEED && startExit(s, pl.car)) return;
     } else {
       const car = nearestCar(s);
-      if (car) enterCar(s, car);
+      if (car) {
+        startEnter(s, car);
+        return;
+      }
     }
   }
   if (pl.car) {

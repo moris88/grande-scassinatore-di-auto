@@ -19,6 +19,7 @@ export const createPlayer = (pos: Vec2): Player => ({
   walkPhase: 0,
   punchTime: 0,
   punchLeft: false,
+  transition: null,
 });
 
 /** Movimento a piedi con controlli "a carro armato": sinistra/destra ruotano */

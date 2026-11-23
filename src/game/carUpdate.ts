@@ -11,6 +11,8 @@ import { type GameState, playSound } from "./state";
 const BURN_TIME = 2.5;
 const BLAST_RADIUS = 70;
 const IDLE = { throttle: 0, steer: 0, handbrake: false };
+/** L'autista si blocca quando il giocatore sta per rubargli l'auto */
+const STOPPED = { throttle: 0, steer: 0, handbrake: true };
 
 const explode = (s: GameState, car: Car): void => {
   car.dead = true;
@@ -43,6 +45,7 @@ export const updateCars = (s: GameState, dt: number): void => {
     let ctl = IDLE;
     if (car.driver === "ai") {
       ctl =
+        (s.player.transition?.car === car ? STOPPED : null) ??
         ambulanceControls(s, car) ??
         (car.police ? policeControls(car, s, dt) : trafficControls(car, s));
       if (car.police) policeShoot(car, s, dt);

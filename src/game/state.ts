@@ -1,7 +1,15 @@
 import type { SoundEvent } from "../engine/audio";
 import type { Camera } from "../engine/camera";
 import type { Vec2 } from "../engine/math";
-import type { Bullet, Car, Explosion, Pedestrian, Pickup, Player } from "../entities/types";
+import type {
+  Bullet,
+  Car,
+  Explosion,
+  Helicopter,
+  Pedestrian,
+  Pickup,
+  Player,
+} from "../entities/types";
 import type { CityMap } from "../world/cityMap";
 
 export type MissionKind = "checkpoint" | "deliver" | "eliminate";
@@ -25,6 +33,8 @@ export interface GameState {
   peds: Pedestrian[];
   bullets: Bullet[];
   explosions: Explosion[];
+  /** Traffico aereo (solo grafico) */
+  helis: Helicopter[];
   pickups: Pickup[];
   camera: Camera;
   /** Livello di ricercato continuo 0..4 (le stelle sono la parte intera arrotondata) */
