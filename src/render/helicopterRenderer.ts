@@ -1,10 +1,12 @@
-import type { Helicopter } from "../entities/types";
+import type { Helicopter, Plane } from "../entities/types";
 import type { GameState } from "../game/state";
 import { cached, makeCanvas, shade } from "./sprites";
 
 /** L'ombra a terra è spostata: l'elicottero vola in alto */
 const SHADOW_OFFSET = 26;
 const BLADE_LEN = 22;
+/** L'aereo vola molto più in alto: ombra molto più spostata */
+const PLANE_SHADOW_OFFSET = 70;
 
 /** Fusoliera vista dall'alto, muso verso destra (40×16) */
 const heliBody = (color: string): HTMLCanvasElement =>
@@ -61,8 +63,36 @@ const drawOne = (g: CanvasRenderingContext2D, h: Helicopter, shadow: boolean): v
   g.restore();
 };
 
-/** Elicotteri sopra a tutto (prima le ombre a terra, poi i velivoli) */
+/** Aereo visto dall'alto (muso verso destra): fusoliera, ali e coda; `shadow` = sagoma scura */
+const drawPlane = (g: CanvasRenderingContext2D, p: Plane, shadow: boolean): void => {
+  const off = shadow ? PLANE_SHADOW_OFFSET : 0;
+  g.save();
+  g.translate(Math.round(p.pos.x + off), Math.round(p.pos.y + off));
+  g.rotate(p.angle);
+  const body = shadow ? "rgba(0,0,0,0.25)" : "#ecf0f1";
+  const wing = shadow ? "rgba(0,0,0,0.25)" : "#bdc3c7";
+  g.fillStyle = wing;
+  g.fillRect(-6, -30, 14, 60); // ali
+  g.fillRect(-28, -12, 7, 24); // impennaggio di coda
+  g.fillStyle = body;
+  g.fillRect(-30, -5, 60, 10); // fusoliera
+  if (!shadow) {
+    g.fillStyle = "#2e86c1";
+    g.fillRect(24, -4, 6, 8); // muso
+    g.fillStyle = "#5d8aa8";
+    for (let x = -18; x < 20; x += 5) g.fillRect(x, -4, 2, 1);
+    g.fillStyle = "#e74c3c";
+    g.fillRect(-2, -30, 3, 3); // luci di posizione
+    g.fillStyle = "#2ecc40";
+    g.fillRect(-2, 27, 3, 3);
+  }
+  g.restore();
+};
+
+/** Velivoli sopra a tutto (prima le ombre a terra, poi elicotteri e aereo) */
 export const drawHelicopters = (g: CanvasRenderingContext2D, s: GameState): void => {
   for (const h of s.helis) drawOne(g, h, true);
+  if (s.plane) drawPlane(g, s.plane, true);
   for (const h of s.helis) drawOne(g, h, false);
+  if (s.plane) drawPlane(g, s.plane, false);
 };

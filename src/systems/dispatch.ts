@@ -7,7 +7,7 @@ import { findLaneRoute, nearestLaneTile } from "../world/laneRoute";
 import { findSpawnTile, spawnLaneCar } from "./spawnSystem";
 
 /** Distanza entro cui si usa un mezzo libero già in strada invece di farne comparire uno */
-const IDLE_RANGE = 900;
+const IDLE_RANGE = 600;
 const SPAWN_TRIES = 6;
 
 /** Manda un mezzo di servizio verso un punto: quello libero più vicino (a lampeggianti

@@ -8,6 +8,7 @@ import type {
   Fire,
   Helicopter,
   Pedestrian,
+  Plane,
   Player,
   Train,
 } from "../entities/types";
@@ -39,6 +40,8 @@ export interface GameState {
   explosions: Explosion[];
   /** Traffico aereo (solo grafico) */
   helis: Helicopter[];
+  /** Aereo in volo (al massimo uno) */
+  plane: Plane | null;
   /** Treno in transito (uno alla volta), secondi al prossimo e direzione del prossimo */
   train: Train | null;
   trainTimer: number;

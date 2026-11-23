@@ -119,6 +119,15 @@ export interface Helicopter {
   color: string;
 }
 
+/** Aereo di linea: attraversa la città su una rotta fissa, alto sopra a tutto */
+export interface Plane {
+  pos: Vec2;
+  vel: Vec2;
+  angle: number;
+  /** Punto di uscita della rotta: raggiunto questo, l'aereo sparisce */
+  exit: Vec2;
+}
+
 export interface Bullet {
   pos: Vec2;
   vel: Vec2;

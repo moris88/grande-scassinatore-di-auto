@@ -41,7 +41,7 @@ describe("pompieri e carro attrezzi", () => {
       const wreck = burningCar(s);
       wreck.dead = true; // rottame già spento
       wreck.driver = "none";
-      for (let i = 0; i < 60 * 45 && !wreck.towedBy; i++) updateGame(s, input, 1 / 60);
+      for (let i = 0; i < 60 * 60 && !wreck.towedBy; i++) updateGame(s, input, 1 / 60);
       if (wreck.towedBy) {
         towed++;
         expect(wreck.towedBy.kind).toBe("tow");

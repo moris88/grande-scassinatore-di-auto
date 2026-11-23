@@ -14,7 +14,7 @@ const HEAT_RADIUS = 18;
 const CALL_RANGE = 900;
 const ARRIVE_DIST = 70;
 const ROADSIDE_DIST = 160;
-const GIVE_UP = 50;
+const GIVE_UP = 60;
 
 /** Un rottame appena esploso resta in fiamme */
 export const startFire = (s: GameState, pos: Vec2): void => {

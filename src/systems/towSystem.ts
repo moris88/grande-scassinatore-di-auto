@@ -11,7 +11,7 @@ const ARRIVE_DIST = 60;
 const ROADSIDE_DIST = 160;
 /** Secondi per agganciare il rottame */
 const HOOK_TIME = 2;
-const GIVE_UP = 50;
+const GIVE_UP = 60;
 
 /** Rottame da portare via: non in fiamme e non già agganciato */
 const findWreck = (s: GameState): Car | undefined =>

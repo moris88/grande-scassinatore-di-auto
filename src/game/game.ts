@@ -33,6 +33,7 @@ export const createGame = (): GameState => {
     bullets: [],
     explosions: [],
     helis: [],
+    plane: null,
     train: null,
     trainTimer: 8,
     trainDir: 1,
