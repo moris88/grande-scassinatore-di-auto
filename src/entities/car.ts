@@ -32,6 +32,8 @@ export const CIVIL_COLORS = [
 const FIXED_COLORS: Partial<Record<VehicleKind, string>> = {
   ambulance: "#f4f4f4",
   taxi: "#f1c40f",
+  firetruck: "#c0392b",
+  tow: "#e1b12c",
 };
 
 export interface CarControls {
@@ -72,6 +74,7 @@ export const createCar = (
   upgrades: { engine: false, armor: false, brakes: false },
   owned: false,
   gang: false,
+  towedBy: null,
   dead: false,
 });
 

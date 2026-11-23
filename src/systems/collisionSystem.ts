@@ -59,7 +59,9 @@ const collideCars = (s: GameState, a: Car, b: Car): void => {
 export const updateEntityCollisions = (s: GameState): void => {
   const cars = s.cars;
   for (let i = 0; i < cars.length; i++)
-    for (let j = i + 1; j < cars.length; j++) collideCars(s, cars[i], cars[j]);
+    for (let j = i + 1; j < cars.length; j++)
+      // I rottami appesi al carro attrezzi non urtano niente
+      if (!cars[i].towedBy && !cars[j].towedBy) collideCars(s, cars[i], cars[j]);
 
   for (const car of cars) {
     const speed = Math.hypot(car.vel.x, car.vel.y);

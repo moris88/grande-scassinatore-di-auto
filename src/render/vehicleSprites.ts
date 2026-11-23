@@ -112,6 +112,28 @@ const drawVan = (px: Px, len: number, wid: number, color: string): void => {
   px(len - 7, 3, 4, wid - 6, "#5d8aa8");
 };
 
+/** Pompieri: camion rosso con la scala sul tetto e la cabina col lampeggiante */
+const drawFiretruck = (px: Px, len: number, wid: number, color: string): void => {
+  chassis(px, len, wid, color);
+  px(4, 5, len - 16, 2, "#ecf0f1");
+  px(4, wid - 7, len - 16, 2, "#ecf0f1");
+  for (let x = 6; x < len - 12; x += 4) px(x, 5, 1, wid - 10, "#ecf0f1");
+  px(len - 11, 2, 9, wid - 4, shade(color, 1.15));
+  px(len - 5, 3, 2, wid - 6, "#5d8aa8");
+  px(len - 10, wid / 2 - 1, 3, 2, "#3a6fd8");
+};
+
+/** Carro attrezzi: cabina, pianale e gru col gancio sul retro */
+const drawTow = (px: Px, len: number, wid: number, color: string): void => {
+  chassis(px, len, wid, color);
+  px(3, 3, len - 16, wid - 6, "#555");
+  px(1, wid / 2 - 1, 12, 2, "#222");
+  px(0, wid / 2 - 2, 2, 4, "#aaa");
+  px(len - 12, 2, 10, wid - 4, shade(color, 1.1));
+  px(len - 5, 3, 2, wid - 6, "#5d8aa8");
+  px(len - 9, wid / 2 - 1, 2, 2, "#ff8c1a");
+};
+
 const DRAWERS: Record<
   Exclude<VehicleKind, "car">,
   (px: Px, len: number, wid: number, color: string) => void
@@ -123,4 +145,6 @@ const DRAWERS: Record<
   truck: drawTruck,
   bus: drawBus,
   ambulance: (px, len, wid) => drawAmbulance(px, len, wid),
+  firetruck: drawFiretruck,
+  tow: drawTow,
 };

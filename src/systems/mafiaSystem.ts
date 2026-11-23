@@ -3,9 +3,9 @@ import type { CarControls } from "../entities/car";
 import { forwardSpeed } from "../entities/car";
 import type { Car } from "../entities/types";
 import { type GameState, type Mission, playSound, showMessage } from "../game/state";
-import { PARKING_LOTS, worldToTile } from "../world/cityMap";
-import { findLaneRoute, nearestLaneTile } from "../world/laneRoute";
+import { PARKING_LOTS } from "../world/cityMap";
 import { TILE } from "../world/tiles";
+import { routeToPoint } from "./dispatch";
 import { playerPos, sees } from "./policeVision";
 import { findSpawnTile, spawnLaneCar } from "./spawnSystem";
 import { steerTowards, trafficControls } from "./trafficAi";
@@ -91,11 +91,7 @@ export const gangControls = (car: Car, s: GameState, dt: number): CarControls =>
     }
     return steerTowards(car, target, d < 100 ? 90 : CHASE_SPEED);
   }
-  if (m.gangLastSeen && car.route === null) {
-    const goal = nearestLaneTile(s.map, worldToTile(m.gangLastSeen));
-    const from = car.aiTarget ?? worldToTile(car.pos);
-    car.route = (goal && findLaneRoute(s.map, from, car.laneDir, goal)) || [];
-  }
+  if (m.gangLastSeen && car.route === null) routeToPoint(s, car, m.gangLastSeen);
   return trafficControls(car, s);
 };
 

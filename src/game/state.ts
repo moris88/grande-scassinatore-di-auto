@@ -5,6 +5,7 @@ import type {
   Bullet,
   Car,
   Explosion,
+  Fire,
   Helicopter,
   Pedestrian,
   Player,
@@ -64,6 +65,10 @@ export interface GameState {
   shop: { kind: ShopKind; notice: string; dealer: DealerConfig } | null;
   /** Intervento dell'ambulanza in corso (uno alla volta); treat = secondi di soccorso rimasti */
   ambulanceJob: { car: Car; ped: Pedestrian; treat: number; time: number } | null;
+  /** Incendi in corso (rottami in fiamme) e interventi di pompieri e carro attrezzi */
+  fires: Fire[];
+  fireJob: { car: Car; fire: Fire; spray: number; time: number } | null;
+  towJob: { car: Car; wreck: Car; hook: number; time: number } | null;
   /** Schermata "MORTO"/"ARRESTATO" prima del respawn */
   downTime: number;
   downReason: "wasted" | "busted" | null;

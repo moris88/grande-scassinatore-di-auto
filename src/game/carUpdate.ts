@@ -2,9 +2,11 @@ import { dist } from "../engine/math";
 import { applyImpactDamage, damageCar, updateCarPhysics } from "../entities/car";
 import type { Car } from "../entities/types";
 import { ambulanceControls } from "../systems/ambulanceSystem";
+import { fireControls, startFire } from "../systems/fireSystem";
 import { gangControls } from "../systems/mafiaSystem";
 import { scarePeds } from "../systems/pedAi";
 import { policeControls, policeShoot } from "../systems/policeAi";
+import { towControls } from "../systems/towSystem";
 import { trafficControls } from "../systems/trafficAi";
 import { killPed } from "../systems/weaponSystem";
 import { type GameState, playSound } from "./state";
@@ -20,6 +22,7 @@ const explode = (s: GameState, car: Car): void => {
   car.vel = { x: 0, y: 0 };
   s.explosions.push({ pos: { ...car.pos }, time: 0 });
   playSound(s, "explosion");
+  startFire(s, car.pos);
   scarePeds(s, car.pos, 200);
   for (const p of s.peds)
     if (p.state !== "dead" && dist(p.pos, car.pos) < BLAST_RADIUS) killPed(s, p, false);
@@ -48,6 +51,8 @@ export const updateCars = (s: GameState, dt: number): void => {
       ctl =
         (s.player.transition?.car === car ? STOPPED : null) ??
         ambulanceControls(s, car) ??
+        fireControls(s, car) ??
+        towControls(s, car) ??
         (car.gang
           ? gangControls(car, s, dt)
           : car.police

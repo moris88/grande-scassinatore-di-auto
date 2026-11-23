@@ -3,9 +3,8 @@ import type { CarControls } from "../entities/car";
 import { forwardSpeed } from "../entities/car";
 import type { Car } from "../entities/types";
 import { type GameState, playSound, stars } from "../game/state";
-import { worldToTile } from "../world/cityMap";
-import { findLaneRoute, nearestLaneTile } from "../world/laneRoute";
 import { dropCops } from "./copAi";
+import { routeToPoint } from "./dispatch";
 import { steerTowards, trafficControls } from "./trafficAi";
 
 const CHASE_SPEED = 230;
@@ -16,11 +15,7 @@ const IDLE: CarControls = { throttle: 0, steer: 0, handbrake: true };
 
 /** Senza vista sul giocatore: percorso fino all'ultimo punto noto, poi pattuglia la zona */
 const searchControls = (car: Car, s: GameState): CarControls => {
-  if (s.lastSeen && car.route === null) {
-    const goal = nearestLaneTile(s.map, worldToTile(s.lastSeen));
-    const from = car.aiTarget ?? worldToTile(car.pos);
-    car.route = (goal && findLaneRoute(s.map, from, car.laneDir, goal)) || [];
-  }
+  if (s.lastSeen && car.route === null) routeToPoint(s, car, s.lastSeen);
   return trafficControls(car, s);
 };
 

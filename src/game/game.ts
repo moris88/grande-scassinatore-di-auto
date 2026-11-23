@@ -5,11 +5,13 @@ import { updateAirTraffic } from "../systems/airTraffic";
 import { updateAmbulances } from "../systems/ambulanceSystem";
 import { updateEntityCollisions } from "../systems/collisionSystem";
 import { updateCop } from "../systems/copAi";
+import { updateFires } from "../systems/fireSystem";
 import { updateGang } from "../systems/mafiaSystem";
 import { failMission, updateMissions } from "../systems/missionSystem";
 import { fillParking, updateParking } from "../systems/parkingSystem";
 import { updatePed } from "../systems/pedAi";
 import { updateSpawns } from "../systems/spawnSystem";
+import { updateTowing } from "../systems/towSystem";
 import { updateTrains } from "../systems/trainSystem";
 import { isBusted, updateWanted } from "../systems/wantedSystem";
 import { updateBullets, updateWeapons } from "../systems/weaponSystem";
@@ -48,6 +50,9 @@ export const createGame = (): GameState => {
     banner: null,
     shop: null,
     ambulanceJob: null,
+    fires: [],
+    fireJob: null,
+    towJob: null,
     downTime: 0,
     downReason: null,
     gameOver: false,
@@ -122,6 +127,8 @@ export const updateGame = (s: GameState, input: Input, dt: number): void => {
   updateWanted(s, dt);
   updateMissions(s, dt);
   updateAmbulances(s, dt);
+  updateFires(s, dt);
+  updateTowing(s, dt);
   updateGang(s, dt);
   updateSpawns(s);
   updateParking(s);

@@ -39,6 +39,8 @@ export interface Car {
   owned: boolean;
   /** Auto della mafia (missione di fuga): insegue e spara al giocatore */
   gang: boolean;
+  /** Rottame agganciato a un carro attrezzi (lo segue e non urta niente) */
+  towedBy: Car | null;
   dead: boolean;
 }
 
@@ -133,4 +135,11 @@ export interface CarUpgrades {
   engine: boolean;
   armor: boolean;
   brakes: boolean;
+}
+
+/** Incendio (rottame in fiamme): si spegne da solo col tempo o con l'acqua dei pompieri */
+export interface Fire {
+  pos: Vec2;
+  /** Intensità 0..1 (a 0 è spento) */
+  strength: number;
 }

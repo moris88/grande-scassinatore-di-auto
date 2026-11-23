@@ -1,9 +1,11 @@
 import { type Vec2, angleTo, dist } from "../engine/math";
 import type { Car } from "../entities/types";
 import { type GameState, stars } from "../game/state";
+import { hasSiren } from "../systems/trafficAi";
 import { PHONE_BOOTHS, tileCenter } from "../world/cityMap";
 import { dirVector } from "../world/tiles";
 import { lightFor, stopLines } from "../world/trafficLights";
+import { drawFires } from "./fireRenderer";
 import { drawHelicopters } from "./helicopterRenderer";
 import { drawMinimap } from "./minimap";
 import { drawParkingRoofs } from "./parkingRoofs";
@@ -29,7 +31,7 @@ const drawCar = (g: CanvasRenderingContext2D, s: GameState, car: Car): void => {
   drawRotated(g, vehicleSprite(car.kind, car.color, car.police, car.dead), car.pos, car.angle);
   if (car.dead) return;
   // Sirene lampeggianti: volanti durante l'inseguimento, ambulanze in servizio
-  const siren = (car.police && stars(s) > 0) || (car.kind === "ambulance" && car.route !== null);
+  const siren = (car.police && stars(s) > 0) || hasSiren(car, s);
   if (siren) {
     const on = Math.floor(s.time * 8) % 2 === 0;
     const other = car.police ? "rgba(60,120,255,0.55)" : "rgba(255,255,255,0.6)";
@@ -38,7 +40,7 @@ const drawCar = (g: CanvasRenderingContext2D, s: GameState, car: Car): void => {
     g.rotate(car.angle);
     g.fillStyle = on ? "rgba(255,40,40,0.55)" : other;
     g.beginPath();
-    g.arc(car.kind === "ambulance" ? 5 : -1, on ? -4 : 4, 7, 0, Math.PI * 2);
+    g.arc(car.police ? -1 : 5, on ? -4 : 4, 7, 0, Math.PI * 2);
     g.fill();
     g.restore();
   }
@@ -173,6 +175,7 @@ export const renderGame = (
   drawPlayer(g, s, false);
   for (const c of s.cars) if (!c.dead) drawCar(g, s, c);
   drawRailway(g, s);
+  drawFires(g, s);
   drawPlayer(g, s, true);
   drawParkingRoofs(g, s);
 

@@ -24,7 +24,10 @@ const UNSTUCK_AFTER = 0.7;
 const YIELD_RADIUS = 220;
 const YIELD_HOLD = 1.5;
 const YIELD_SPEED = 15;
-const SIDE_OFFSET = 11;
+/** Chi accosta si sposta poco a destra; chi è in emergenza sorpassa invadendo la corsia opposta */
+const YIELD_OFFSET = 6;
+const OVERTAKE_OFFSET = 26;
+const SIDE_AIM_AHEAD = 40;
 /** Distanza davanti entro cui un mezzo in emergenza si sposta per sorpassare */
 const OVERTAKE_AHEAD = 50;
 
@@ -76,11 +79,12 @@ const blockedAhead = (car: Car, s: GameState, emergency: boolean): boolean => {
   return !s.player.car && inFront(car, s.player.pos, 8);
 };
 
-/** Mezzo con le sirene accese: ambulanza in servizio o volante durante un inseguimento */
+/** Mezzo con le sirene accese: ambulanza o pompieri in servizio, volante durante un inseguimento */
 export const hasSiren = (car: Car, s: GameState): boolean =>
   !car.dead &&
   car.driver === "ai" &&
-  ((car.kind === "ambulance" && car.route !== null) || (car.police && stars(s) > 0));
+  (((car.kind === "ambulance" || car.kind === "firetruck") && car.route !== null) ||
+    (car.police && stars(s) > 0));
 
 /** Lato della corsia da tenere: 1 = accosta a destra (sente una sirena), -1 = sorpassa a
  * sinistra (in emergenza con qualcuno che accosta davanti), 0 = centro corsia */
@@ -166,7 +170,8 @@ export const trafficControls = (car: Car, s: GameState): CarControls => {
   // Semaforo: col rosso o col giallo ci si ferma prima dell'incrocio (non in emergenza)
   const inCrossing = isJunctionTile(s.map, here);
   // Chi segue un percorso (ambulanza, volante in ricerca) è in emergenza
-  const emergency = car.route !== null;
+  // Il carro attrezzi segue un percorso ma senza lampeggianti: rispetta i semafori
+  const emergency = car.route !== null && car.kind !== "tow";
   if (
     !emergency &&
     !inCrossing &&
@@ -219,13 +224,21 @@ export const trafficControls = (car: Car, s: GameState): CarControls => {
   const cruise = VEHICLES[car.kind].cruise * (emergency ? EMERGENCY_BOOST : 1);
   // Sirene: i civili accostano a destra; chi è in emergenza li supera tenendo la sinistra
   const side = laneSide(car, s, emergency);
-  if (side !== 0) {
-    const right = { x: -dv.y, y: dv.x };
+  // Ci si sposta di lato solo sui rettilinei: in curva e negli incroci si resta in corsia
+  const straight = !slow && !isJunctionTile(s.map, here) && !isJunctionTile(s.map, car.aiTarget);
+  if (side !== 0 && straight) {
+    const lv = dirVector(car.laneDir);
+    const right = { x: -lv.y, y: lv.x };
+    // Punto lungo la corsia un po' più avanti, spostato di lato: manovra dolce anche per i mezzi
+    // lunghi (mirare troppo vicino li faceva sterzare di colpo e salire sul marciapiede)
+    const ahead = (car.pos.x - target.x) * lv.x + (car.pos.y - target.y) * lv.y + SIDE_AIM_AHEAD;
+    const offset = side > 0 ? YIELD_OFFSET : -OVERTAKE_OFFSET;
     const aim = {
-      x: target.x + right.x * side * SIDE_OFFSET,
-      y: target.y + right.y * side * SIDE_OFFSET,
+      x: target.x + lv.x * ahead + right.x * offset,
+      y: target.y + lv.y * ahead + right.y * offset,
     };
     return steerTowards(car, aim, side > 0 ? YIELD_SPEED : cruise);
   }
+  if (side > 0) return steerTowards(car, target, YIELD_SPEED);
   return steerTowards(car, target, slow ? TURN_CRUISE : cruise);
 };

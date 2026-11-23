@@ -1,6 +1,16 @@
 import type { Vec2 } from "../engine/math";
 
-export type VehicleKind = "car" | "taxi" | "sport" | "suv" | "van" | "truck" | "bus" | "ambulance";
+export type VehicleKind =
+  | "car"
+  | "taxi"
+  | "sport"
+  | "suv"
+  | "van"
+  | "truck"
+  | "bus"
+  | "ambulance"
+  | "firetruck"
+  | "tow";
 
 export interface VehicleSpec {
   /** Lunghezza e larghezza in pixel (anche dello sprite) */
@@ -97,6 +107,28 @@ export const VEHICLES: Record<VehicleKind, VehicleSpec> = {
     cruise: 58,
     health: 180,
   },
+  firetruck: {
+    len: 40,
+    wid: 16,
+    mass: 2.6,
+    maxSpeed: 220,
+    accel: 0.7,
+    brake: 0.8,
+    armor: 0.6,
+    cruise: 70,
+    health: 220,
+  },
+  tow: {
+    len: 34,
+    wid: 15,
+    mass: 1.8,
+    maxSpeed: 220,
+    accel: 0.8,
+    brake: 0.9,
+    armor: 0.7,
+    cruise: 75,
+    health: 160,
+  },
   bus: {
     len: 44,
     wid: 16,
@@ -119,6 +151,10 @@ export const TRAFFIC_MIX: [VehicleKind, number][] = [
   ["van", 10],
   ["truck", 12],
   ["bus", 11],
+  // Mezzi di servizio liberi: girano a lampeggianti spenti finché non vengono chiamati
+  ["ambulance", 3],
+  ["firetruck", 2],
+  ["tow", 3],
 ];
 
 /** Cerchi di collisione distribuiti lungo il veicolo (uno per le auto, più per i mezzi lunghi) */

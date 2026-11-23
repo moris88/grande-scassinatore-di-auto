@@ -87,7 +87,13 @@ export const updateSpawns = (s: GameState): void => {
     keep(
       from,
       c.pos,
-      c.driver === "player" || c.missionTag || c.owned || c === s.player.car || c === job?.car,
+      c.driver === "player" ||
+        c.missionTag ||
+        c.owned ||
+        c === s.player.car ||
+        c === job?.car ||
+        c === s.fireJob?.car ||
+        c === s.towJob?.car,
     ),
   );
   // I pedoni a terra spariscono dopo un po', tranne quello che l'ambulanza sta soccorrendo
