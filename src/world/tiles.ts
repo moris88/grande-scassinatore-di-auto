@@ -13,6 +13,8 @@ export enum Tile {
   ParkingCovered = 8,
   /** Binario della ferrovia (fuori dalle strade; agli incroci la tile resta strada) */
   Rail = 9,
+  /** Porta di un negozio: si entra premendo E dal marciapiede davanti */
+  Door = 10,
 }
 
 /** Direzioni di corsia come bitmask */
@@ -47,10 +49,12 @@ export const oppositeDir = (d: Dir): Dir =>
   d === Dir.N ? Dir.S : d === Dir.S ? Dir.N : d === Dir.E ? Dir.W : Dir.E;
 
 /** Blocca le auto */
-export const blocksCars = (t: Tile): boolean => t === Tile.Building || t === Tile.Water;
+export const blocksCars = (t: Tile): boolean =>
+  t === Tile.Building || t === Tile.Water || t === Tile.Door;
 
 /** Blocca i pedoni (l'acqua uccide, ma la trattiamo come muro) */
-export const blocksPeds = (t: Tile): boolean => t === Tile.Building || t === Tile.Water;
+export const blocksPeds = (t: Tile): boolean =>
+  t === Tile.Building || t === Tile.Water || t === Tile.Door;
 
 export const isWalkable = (t: Tile): boolean =>
   t === Tile.Sidewalk ||

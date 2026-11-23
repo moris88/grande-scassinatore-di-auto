@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { GameCanvas } from "./components/GameCanvas";
 import { Hud } from "./components/Hud";
 import { PauseMenu } from "./components/PauseMenu";
+import { ShopScreen } from "./components/ShopScreen";
 import { loadBest, saveBest } from "./game/highScore";
 import type { HudData } from "./game/hud";
 
@@ -34,6 +35,7 @@ export function App() {
     <>
       <GameCanvas key={gameKey} paused={paused} onHud={setHud} onTogglePause={togglePause} />
       {hud && <Hud hud={hud} />}
+      {hud?.shop && <ShopScreen shop={hud.shop} money={hud.money} />}
       {gameOver && (
         <PauseMenu
           title="GAME OVER"

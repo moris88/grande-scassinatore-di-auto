@@ -157,23 +157,3 @@ export const deadPedSprite = (shirt: string): HTMLCanvasElement =>
     g.fillRect(3, 10, 2, 1);
     return c;
   });
-
-/** Cassa delle armi */
-export const pickupSprite = (weapon: "pistol" | "smg"): HTMLCanvasElement =>
-  cached(`pickup:${weapon}`, () => {
-    const [c, g] = makeCanvas(12, 12);
-    g.fillStyle = "#5a3d1e";
-    g.fillRect(0, 0, 12, 12);
-    g.fillStyle = "#8b5e34";
-    g.fillRect(1, 1, 10, 10);
-    g.fillStyle = "#222";
-    if (weapon === "pistol") {
-      g.fillRect(3, 4, 6, 2);
-      g.fillRect(3, 6, 2, 3);
-    } else {
-      g.fillRect(2, 4, 8, 2);
-      g.fillRect(4, 6, 2, 3);
-      g.fillRect(7, 6, 1, 2);
-    }
-    return c;
-  });

@@ -11,17 +11,11 @@ import { updatePed } from "../systems/pedAi";
 import { updateSpawns } from "../systems/spawnSystem";
 import { updateTrains } from "../systems/trainSystem";
 import { isBusted, updateWanted } from "../systems/wantedSystem";
-import { updateBullets, updatePickups, updateWeapons } from "../systems/weaponSystem";
-import {
-  HOSPITAL,
-  PLAYER_START,
-  POLICE_STATION,
-  WEAPON_SPAWNS,
-  buildCity,
-  tileCenter,
-} from "../world/cityMap";
+import { updateBullets, updateWeapons } from "../systems/weaponSystem";
+import { HOSPITAL, PLAYER_START, POLICE_STATION, buildCity, tileCenter } from "../world/cityMap";
 import { updateCars } from "./carUpdate";
 import { updatePlayerControl } from "./playerControl";
+import { updateShop } from "./shopSystem";
 import { type GameState, showMessage } from "./state";
 
 const DOWN_TIME = 3;
@@ -39,7 +33,6 @@ export const createGame = (): GameState => {
     train: null,
     trainTimer: 8,
     trainDir: 1,
-    pickups: WEAPON_SPAWNS.map((w) => ({ pos: tileCenter(w.tile), weapon: w.weapon, respawn: 0 })),
     camera: { pos: { ...start }, zoom: 2 },
     heat: 0,
     seen: false,
@@ -52,6 +45,7 @@ export const createGame = (): GameState => {
     phoneCooldown: 0,
     message: null,
     banner: null,
+    shop: null,
     ambulanceJob: null,
     downTime: 0,
     downReason: null,
@@ -93,6 +87,10 @@ const respawn = (s: GameState): void => {
 
 export const updateGame = (s: GameState, input: Input, dt: number): void => {
   if (s.gameOver) return;
+  if (s.shop) {
+    updateShop(s, input);
+    return;
+  }
   s.time += dt;
   if (s.message) {
     s.message.time -= dt;
@@ -116,7 +114,6 @@ export const updateGame = (s: GameState, input: Input, dt: number): void => {
     if (p.role === "cop") updateCop(s, p, dt);
     else updatePed(s, p, dt);
   updateBullets(s, dt);
-  updatePickups(s, dt);
   updateEntityCollisions(s);
   updateWanted(s, dt);
   updateMissions(s, dt);

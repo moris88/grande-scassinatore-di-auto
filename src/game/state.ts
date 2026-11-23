@@ -7,11 +7,10 @@ import type {
   Explosion,
   Helicopter,
   Pedestrian,
-  Pickup,
   Player,
   Train,
 } from "../entities/types";
-import type { CityMap } from "../world/cityMap";
+import type { CityMap, ShopKind } from "../world/cityMap";
 
 export type MissionKind = "checkpoint" | "deliver" | "eliminate";
 
@@ -40,7 +39,6 @@ export interface GameState {
   train: Train | null;
   trainTimer: number;
   trainDir: 1 | -1;
-  pickups: Pickup[];
   camera: Camera;
   /** Livello di ricercato continuo 0..4 (le stelle sono la parte intera arrotondata) */
   heat: number;
@@ -59,6 +57,8 @@ export interface GameState {
   message: { text: string; time: number } | null;
   /** Schermata grande: missione compiuta o polizia seminata */
   banner: { kind: "success" | "escaped"; detail: string; time: number } | null;
+  /** Negozio in cui si trova il giocatore (il mondo è fermo), con l'ultimo avviso */
+  shop: { kind: ShopKind; notice: string } | null;
   /** Intervento dell'ambulanza in corso (uno alla volta); treat = secondi di soccorso rimasti */
   ambulanceJob: { car: Car; ped: Pedestrian; treat: number; time: number } | null;
   /** Schermata "MORTO"/"ARRESTATO" prima del respawn */

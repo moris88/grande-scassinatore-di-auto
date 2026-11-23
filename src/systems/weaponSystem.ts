@@ -2,7 +2,7 @@ import { PED_RADIUS, circleBlocked, moveCircle } from "../engine/collision";
 import type { Input } from "../engine/input";
 import { dist } from "../engine/math";
 import type { Pedestrian, WeaponKind } from "../entities/types";
-import { type GameState, playSound, showMessage } from "../game/state";
+import { type GameState, playSound } from "../game/state";
 import { blocksCars, blocksPeds } from "../world/tiles";
 import { scarePeds } from "./pedAi";
 import { crime } from "./wantedSystem";
@@ -141,19 +141,4 @@ export const updateBullets = (s: GameState, dt: number): void => {
     }
   }
   s.bullets = s.bullets.filter((b) => b.life > 0);
-};
-
-/** Raccolta delle armi a terra */
-export const updatePickups = (s: GameState, dt: number): void => {
-  for (const pk of s.pickups) {
-    if (pk.respawn > 0) {
-      pk.respawn -= dt;
-      continue;
-    }
-    if (s.player.car || dist(pk.pos, s.player.pos) > 14) continue;
-    s.player.ammo[pk.weapon] += pk.weapon === "smg" ? 120 : 30;
-    s.player.weapon = pk.weapon;
-    pk.respawn = 30;
-    showMessage(s, `Raccolta: ${WEAPON_NAMES[pk.weapon]}`, 2);
-  }
 };

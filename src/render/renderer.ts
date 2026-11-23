@@ -8,7 +8,7 @@ import { drawHelicopters } from "./helicopterRenderer";
 import { drawMinimap } from "./minimap";
 import { drawParkingRoofs } from "./parkingRoofs";
 import { drawPlayer } from "./playerRenderer";
-import { copSprite, deadPedSprite, pedSprite, pickupSprite } from "./sprites";
+import { copSprite, deadPedSprite, pedSprite } from "./sprites";
 import { drawRailway } from "./trainRenderer";
 import { vehicleSprite } from "./vehicleSprites";
 
@@ -157,8 +157,6 @@ export const renderGame = (
     }
   }
 
-  for (const pk of s.pickups)
-    if (pk.respawn <= 0) drawRotated(g, pickupSprite(pk.weapon), pk.pos, 0);
   for (const p of s.peds)
     if (p.state === "dead") drawRotated(g, deadPedSprite(p.color), p.pos, p.angle);
   for (const c of s.cars) if (c.dead) drawCar(g, s, c);

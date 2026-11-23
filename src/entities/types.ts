@@ -69,6 +69,10 @@ export interface Player {
   punchLeft: boolean;
   /** Animazione di entrata/uscita dall'auto in corso (comandi bloccati) */
   transition: CarTransition | null;
+  /** Barra della corsa 0..100 */
+  stamina: number;
+  /** Barra svuotata: si cammina finché non si ricarica un po' */
+  exhausted: boolean;
 }
 
 export interface CarTransition {
@@ -113,10 +117,4 @@ export interface Bullet {
 export interface Explosion {
   pos: Vec2;
   time: number;
-}
-
-export interface Pickup {
-  pos: Vec2;
-  weapon: "pistol" | "smg";
-  respawn: number;
 }

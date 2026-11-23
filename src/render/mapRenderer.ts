@@ -1,6 +1,18 @@
-import { type CityMap, MAP_H, MAP_W, RAIL_ROW, SPRAY_SHOP, laneAt, tileAt } from "../world/cityMap";
+import {
+  type CityMap,
+  MAP_H,
+  MAP_W,
+  RAIL_ROW,
+  SHOPS,
+  SPRAY_SHOP,
+  type ShopKind,
+  laneAt,
+  tileAt,
+} from "../world/cityMap";
 import { Dir, TILE, Tile } from "../world/tiles";
 import { shade } from "./sprites";
+
+const SHOP_SIGNS: Record<ShopKind, string> = { guns: "ARMI", food: "ALIMENTARI" };
 
 const ROOFS = ["#7a5c4f", "#6b6b7a", "#8a7f6a", "#5e6e5e", "#7d4f4f", "#6a5a72"];
 
@@ -150,6 +162,35 @@ const drawRail = (tx: number, ty: number, px: Px, ballast: boolean): void => {
   px(0, 20, TILE, 2, "#c8c8cc");
 };
 
+/** Porta del negozio: tetto dell'edificio con porta e tenda a strisce verso il marciapiede */
+const drawDoor = (map: CityMap, tx: number, ty: number, px: Px): void => {
+  drawBuilding(map, tx, ty, px);
+  const walk = (dx: number, dy: number): boolean => tileAt(map, tx + dx, ty + dy) !== Tile.Building;
+  const stripes = (x: number, y: number, w: number, h: number): void => {
+    for (let i = 0; i < Math.max(w, h); i += 4)
+      px(
+        w > h ? x + i : x,
+        w > h ? y : y + i,
+        w > h ? 4 : w,
+        w > h ? h : 4,
+        (i / 4) % 2 ? "#e84393" : "#f5f5f5",
+      );
+  };
+  if (walk(0, -1)) {
+    stripes(2, 0, TILE - 4, 6);
+    px(11, 0, 10, 3, "#5a3d1e");
+  } else if (walk(0, 1)) {
+    stripes(2, TILE - 6, TILE - 4, 6);
+    px(11, TILE - 3, 10, 3, "#5a3d1e");
+  } else if (walk(-1, 0)) {
+    stripes(0, 2, 6, TILE - 4);
+    px(0, 11, 3, 10, "#5a3d1e");
+  } else {
+    stripes(TILE - 6, 2, 6, TILE - 4);
+    px(TILE - 3, 11, 3, 10, "#5a3d1e");
+  }
+};
+
 const drawSpray = (tx: number, ty: number, px: Px): void => {
   px(0, 0, TILE, TILE, "#4a4a4a");
   for (let i = 0; i < TILE; i += 8) px(i, (tx + ty) % 2 === 0 ? 0 : 30, 4, 2, "#e1b12c");
@@ -183,11 +224,23 @@ export const renderMap = (map: CityMap): HTMLCanvasElement => {
       else if (t === Tile.Phone) drawPhone(map, tx, ty, px);
       else if (t === Tile.Parking || t === Tile.ParkingCovered) drawParking(map, tx, ty, px);
       else if (t === Tile.Rail) drawRail(tx, ty, px, true);
+      else if (t === Tile.Door) drawDoor(map, tx, ty, px);
       else drawSpray(tx, ty, px);
     }
   }
   g.fillStyle = "#e1b12c";
   g.font = "bold 9px monospace";
   g.fillText("VERNICIA", SPRAY_SHOP.x * TILE + 10, SPRAY_SHOP.y * TILE + 36);
+  // Insegne dei negozi sul tetto, sopra la porta
+  g.font = "bold 8px monospace";
+  for (const sh of SHOPS) {
+    const label = SHOP_SIGNS[sh.kind];
+    const x = (sh.door.x + 0.5) * TILE - label.length * 2.5;
+    const y = sh.door.y * TILE + (sh.outside.y < sh.door.y ? 18 : 12);
+    g.fillStyle = "#000";
+    g.fillRect(x - 2, y - 8, label.length * 5 + 4, 10);
+    g.fillStyle = "#ffe600";
+    g.fillText(label, x, y);
+  }
   return c;
 };

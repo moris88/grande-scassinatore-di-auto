@@ -217,3 +217,80 @@ body,
   font-size: 22px;
   font-weight: bold;
 }
+
+/* Barra della corsa sotto il moltiplicatore */
+.stamina {
+  width: 120px;
+  height: 8px;
+  margin-top: 4px;
+  background: #222;
+  border: 1px solid #000;
+}
+
+.stamina-fill {
+  height: 100%;
+  background: #4fc3f7;
+}
+
+.stamina-fill.exhausted {
+  background: #e74c3c;
+}
+
+/* Interno dei negozi */
+.shop {
+  background: radial-gradient(circle, #3b2a1a 0%, #120c06 100%);
+}
+
+.shop-panel {
+  min-width: 360px;
+}
+
+.shop-sign {
+  background: #c0392b;
+  color: #ffe600;
+  font-size: 28px;
+  font-weight: bold;
+  letter-spacing: 3px;
+  padding: 6px;
+  border: 3px solid #000;
+}
+
+.shop-counter {
+  height: 14px;
+  margin: 12px 0;
+  background: repeating-linear-gradient(90deg, #8b5e34 0 16px, #6b4426 16px 32px);
+}
+
+.shop-items {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+}
+
+.shop-items li {
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.shop-items li.too-expensive {
+  color: #777;
+}
+
+.shop-key {
+  color: #ffe600;
+}
+
+.shop-price {
+  margin-left: auto;
+  color: #7dff7d;
+}
+
+.too-expensive .shop-price {
+  color: #e74c3c;
+}
+
+.shop-notice {
+  color: #ffe600;
+  min-height: 1.2em;
+}

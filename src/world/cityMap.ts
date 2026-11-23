@@ -74,11 +74,11 @@ export const PLAYER_START: Vec2 = { x: 5, y: 4 };
 export const HOSPITAL: Vec2 = { x: 20, y: 27 };
 export const POLICE_STATION: Vec2 = { x: 47, y: 4 };
 
-export const WEAPON_SPAWNS: { tile: Vec2; weapon: "pistol" | "smg" }[] = [
-  { tile: { x: 10, y: 27 }, weapon: "pistol" },
-  { tile: { x: 33, y: 15 }, weapon: "smg" },
-  { tile: { x: 24, y: 39 }, weapon: "pistol" },
-  { tile: { x: 57, y: 51 }, weapon: "smg" },
+/** Negozi: la porta è una tile di edificio affacciata sul marciapiede (`outside`) */
+export type ShopKind = "guns" | "food";
+export const SHOPS: { kind: ShopKind; door: Vec2; outside: Vec2 }[] = [
+  { kind: "guns", door: { x: 24, y: 5 }, outside: { x: 24, y: 4 } },
+  { kind: "food", door: { x: 36, y: 35 }, outside: { x: 36, y: 36 } },
 ];
 
 export interface CityMap {
@@ -137,6 +137,7 @@ export const buildCity = (): CityMap => {
   for (let x = 1; x < MAP_W - 1; x++)
     if (tiles[idx(x, RAIL_ROW)] !== Tile.Road) tiles[idx(x, RAIL_ROW)] = Tile.Rail;
   for (const p of PHONE_BOOTHS) tiles[idx(p.x, p.y)] = Tile.Phone;
+  for (const sh of SHOPS) tiles[idx(sh.door.x, sh.door.y)] = Tile.Door;
   fill(tiles, SPRAY_SHOP, Tile.SprayShop);
   for (const p of PARKING_LOTS) fill(tiles, p, p.covered ? Tile.ParkingCovered : Tile.Parking);
   return { tiles, lanes };

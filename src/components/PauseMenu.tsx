@@ -28,8 +28,8 @@ export function PauseMenu({ title, big, best, score, newRecord, onResume, onRest
           Nuova partita
         </button>
         <div className="controls">
-          <p>Frecce / WASD: muoviti e guida</p>
-          <p>E / Invio: sali o scendi dall'auto</p>
+          <p>Frecce / WASD: muoviti e guida · Shift: corri</p>
+          <p>E / Invio: sali o scendi dall'auto, entra nei negozi (porte con la tenda)</p>
           <p>Spazio: spara (a piedi) / freno a mano (in auto)</p>
           <p>Q: cambia arma · M: audio on/off · Esc: pausa</p>
           <p>

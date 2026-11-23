@@ -8,7 +8,7 @@ import {
   PHONE_BOOTHS,
   PLAYER_START,
   POLICE_STATION,
-  WEAPON_SPAWNS,
+  SHOPS,
   buildCity,
   laneAt,
   tileAt,
@@ -24,7 +24,7 @@ describe("cityMap", () => {
   });
 
   it("i punti speciali sono su tile pedonali", () => {
-    for (const p of [PLAYER_START, HOSPITAL, POLICE_STATION, ...WEAPON_SPAWNS.map((w) => w.tile)])
+    for (const p of [PLAYER_START, HOSPITAL, POLICE_STATION, ...SHOPS.map((sh) => sh.outside)])
       expect(isWalkable(tileAt(map, p.x, p.y))).toBe(true);
     for (const b of PHONE_BOOTHS) expect(tileAt(map, b.x, b.y)).toBe(Tile.Phone);
   });

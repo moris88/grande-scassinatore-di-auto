@@ -6,7 +6,15 @@ import { blocksPeds } from "../world/tiles";
 import type { Player } from "./types";
 
 const WALK_SPEED = 95;
+/** Di corsa si è più veloci degli agenti a piedi (100) */
+const RUN_SPEED = 160;
 const TURN_SPEED = 4.2;
+export const MAX_STAMINA = 100;
+/** Consumo e recupero della barra della corsa (al secondo) */
+const STAMINA_DRAIN = 25;
+const STAMINA_REGEN = 15;
+/** Dopo aver svuotato la barra si torna a correre solo oltre questa soglia */
+const STAMINA_RECOVER = 30;
 
 export const createPlayer = (pos: Vec2): Player => ({
   pos: { ...pos },
@@ -20,17 +28,28 @@ export const createPlayer = (pos: Vec2): Player => ({
   punchTime: 0,
   punchLeft: false,
   transition: null,
+  stamina: MAX_STAMINA,
+  exhausted: false,
 });
 
-/** Movimento a piedi con controlli "a carro armato": sinistra/destra ruotano */
+/** Movimento a piedi con controlli "a carro armato": sinistra/destra ruotano.
+ * Shift + avanti = corsa, finché c'è fiato nella barra. */
 export const updatePlayerOnFoot = (p: Player, input: Input, dt: number, map: CityMap): void => {
   p.angle += input.axisX() * TURN_SPEED * dt;
   const fwd = input.axisY();
-  const speed = fwd > 0 ? WALK_SPEED : WALK_SPEED * 0.55;
+  if (p.exhausted && p.stamina >= STAMINA_RECOVER) p.exhausted = false;
+  const running = fwd > 0 && !p.exhausted && input.isDown("ShiftLeft", "ShiftRight");
+  if (running) {
+    p.stamina = Math.max(0, p.stamina - STAMINA_DRAIN * dt);
+    if (p.stamina === 0) p.exhausted = true;
+  } else {
+    p.stamina = Math.min(MAX_STAMINA, p.stamina + STAMINA_REGEN * dt);
+  }
+  const speed = running ? RUN_SPEED : fwd > 0 ? WALK_SPEED : WALK_SPEED * 0.55;
   if (fwd !== 0) {
     const dx = Math.cos(p.angle) * speed * fwd * dt;
     const dy = Math.sin(p.angle) * speed * fwd * dt;
     moveCircle(map, p.pos, dx, dy, PED_RADIUS, blocksPeds);
-    p.walkPhase += dt * 10;
+    p.walkPhase += dt * (running ? 16 : 10);
   }
 };

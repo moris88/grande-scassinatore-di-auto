@@ -17,6 +17,7 @@ const COLORS: Record<Tile, string> = {
   [Tile.Parking]: "#55555b",
   [Tile.ParkingCovered]: "#6e6a60",
   [Tile.Rail]: "#7a6248",
+  [Tile.Door]: "#e84393",
 };
 
 const cache = new WeakMap<CityMap, HTMLCanvasElement>();

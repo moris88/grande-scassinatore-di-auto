@@ -14,6 +14,14 @@ export function Hud({ hud }: Props) {
       <div className="hud-top-left">
         <div className="hud-money">${hud.money.toLocaleString("it-IT")}</div>
         <div>Moltiplicatore x{hud.multiplier}</div>
+        {hud.stamina !== null && (
+          <div className="stamina" title="Corsa (Shift)">
+            <div
+              className={hud.exhausted ? "stamina-fill exhausted" : "stamina-fill"}
+              style={{ width: `${hud.stamina}%` }}
+            />
+          </div>
+        )}
         <div>Vite: {"♥".repeat(Math.max(0, hud.lives))}</div>
       </div>
       <div className="hud-top-right">

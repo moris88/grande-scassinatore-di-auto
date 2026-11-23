@@ -56,7 +56,8 @@ export function GameCanvas({ paused, onHud, onTogglePause }: Props) {
 
     const stop = startLoop(
       (dt) => {
-        if (input.wasPressed("Escape")) callbacks.current.onTogglePause();
+        // Nel negozio Esc serve a uscire, non a mettere in pausa
+        if (input.wasPressed("Escape") && !state.shop) callbacks.current.onTogglePause();
         if (input.wasPressed("KeyM")) audio.toggleMute();
         if (!pausedRef.current) updateGame(state, input, dt);
         input.endFrame();

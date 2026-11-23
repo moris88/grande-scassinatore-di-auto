@@ -4,6 +4,7 @@ import { applyImpactDamage, forwardSpeed, updateCarPhysics } from "../entities/c
 import { updatePlayerOnFoot } from "../entities/player";
 import type { Car } from "../entities/types";
 import { enterRange, startEnter, startExit, updateTransition } from "./carTransition";
+import { enterShop, shopAtDoor } from "./shopSystem";
 import { type GameState, playSound } from "./state";
 
 const MAX_EXIT_SPEED = 70;
@@ -30,6 +31,12 @@ export const updatePlayerControl = (s: GameState, input: Input, dt: number): voi
     if (pl.car) {
       if (Math.abs(forwardSpeed(pl.car)) < MAX_EXIT_SPEED && startExit(s, pl.car)) return;
     } else {
+      // Davanti alla porta di un negozio si entra (ha la precedenza sulle auto)
+      const shop = shopAtDoor(s);
+      if (shop) {
+        enterShop(s, shop);
+        return;
+      }
       const car = nearestCar(s);
       if (car) {
         startEnter(s, car);
