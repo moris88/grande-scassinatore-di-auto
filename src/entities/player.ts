@@ -17,6 +17,8 @@ export const createPlayer = (pos: Vec2): Player => ({
   ammo: { fists: Number.POSITIVE_INFINITY, pistol: 0, smg: 0 },
   fireCooldown: 0,
   walkPhase: 0,
+  punchTime: 0,
+  punchLeft: false,
 });
 
 /** Movimento a piedi con controlli "a carro armato": sinistra/destra ruotano */

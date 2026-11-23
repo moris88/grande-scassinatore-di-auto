@@ -13,6 +13,8 @@ export interface HudData {
   missionTitle: string | null;
   missionTime: number | null;
   message: string | null;
+  /** Ricompensa della missione appena compiuta (banner grande), null se non c'è */
+  successReward: number | null;
   downReason: "wasted" | "busted" | null;
   gameOver: boolean;
 }
@@ -29,6 +31,7 @@ export const makeHud = (s: GameState): HudData => ({
   missionTitle: s.mission?.title ?? null,
   missionTime: s.mission ? Math.ceil(s.mission.timeLeft) : null,
   message: s.message?.text ?? null,
+  successReward: s.successBanner?.reward ?? null,
   downReason: s.downReason,
   gameOver: s.gameOver,
 });

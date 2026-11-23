@@ -11,6 +11,8 @@ import { tileAtWorld, tileCenter } from "../world/cityMap";
 import { Tile } from "../world/tiles";
 import { findSpawnTile, spawnLaneCar } from "./spawnSystem";
 
+/** Secondi in cui resta a schermo il banner "MISSIONE COMPIUTA" */
+const SUCCESS_BANNER_TIME = 3;
 const KINDS: MissionKind[] = ["checkpoint", "deliver", "eliminate"];
 
 const createMission = (s: GameState, kind: MissionKind): Mission | null => {
@@ -75,7 +77,7 @@ const finish = (s: GameState, success: boolean): void => {
     const reward = m.reward * s.multiplier;
     s.money += reward;
     s.multiplier = Math.min(5, s.multiplier + 1);
-    showMessage(s, `MISSIONE COMPIUTA! +${reward}`, 4);
+    s.successBanner = { reward, time: SUCCESS_BANNER_TIME };
     playSound(s, "success");
   } else {
     showMessage(s, "MISSIONE FALLITA", 4);

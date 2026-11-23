@@ -17,6 +17,8 @@ export interface Car {
   laneDir: Dir;
   /** Tile verso cui l'IA si sta dirigendo */
   aiTarget: Vec2 | null;
+  /** Mossa successiva già pianificata (per rallentare e sterzare prima delle curve) */
+  aiNext: { dir: Dir; tile: Vec2 } | null;
   /** Secondi in cui l'auto è rimasta bloccata (per lo sblocco IA) */
   stuckTime: number;
   reverseTime: number;
@@ -40,6 +42,8 @@ export interface Pedestrian {
   walkPhase: number;
   missionTarget: boolean;
   deadTime: number;
+  /** Salute (i pugni tolgono 50) */
+  health: number;
 }
 
 export interface Player {
@@ -51,6 +55,10 @@ export interface Player {
   ammo: Record<WeaponKind, number>;
   fireCooldown: number;
   walkPhase: number;
+  /** Secondi rimanenti dell'animazione del pugno */
+  punchTime: number;
+  /** Il prossimo/ultimo pugno è col braccio sinistro (si alternano) */
+  punchLeft: boolean;
 }
 
 export interface Bullet {

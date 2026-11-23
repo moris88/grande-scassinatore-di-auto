@@ -105,6 +105,29 @@ export const pedSprite = (shirt: string, frame: number): HTMLCanvasElement =>
     return c;
   });
 
+/** Giocatore che tira un pugno: un braccio teso in avanti (sinistro in alto, destro in basso) */
+export const punchSprite = (shirt: string, left: boolean): HTMLCanvasElement =>
+  cached(`punch:${shirt}:${left}`, () => {
+    const [c, g] = makeCanvas(PED_SPRITE, PED_SPRITE);
+    const px = (x: number, y: number, w: number, h: number, col: string): void => {
+      g.fillStyle = col;
+      g.fillRect(x, y, w, h);
+    };
+    // Piedi in guardia
+    px(5, 2, 2, 2, "#222");
+    px(1, 6, 2, 2, "#222");
+    px(3, 1, 4, 8, shirt);
+    px(3, 1, 1, 8, shade(shirt, 0.7));
+    // Braccio teso e pugno; l'altra mano resta in guardia
+    const armY = left ? 1 : 7;
+    px(6, armY, 2, 2, shirt);
+    px(8, armY, 2, 2, SKIN);
+    px(6, left ? 8 : 1, 1, 1, SKIN);
+    px(4, 3, 3, 4, HAIR);
+    px(6, 4, 1, 2, SKIN);
+    return c;
+  });
+
 /** Pedone a terra */
 export const deadPedSprite = (shirt: string): HTMLCanvasElement =>
   cached(`dead:${shirt}`, () => {

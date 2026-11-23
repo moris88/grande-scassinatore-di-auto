@@ -14,12 +14,26 @@ export interface StopLine {
   dir: Dir;
 }
 
-const isIntersection = (map: CityMap, x: number, y: number): boolean => {
+/** Tile con più corsie: incrocio oppure curva */
+const isJunction = (map: CityMap, x: number, y: number): boolean => {
   const l = laneAt(map, x, y);
   return l !== 0 && !ALL_DIRS.includes(l);
 };
 
+/** Incrocio vero (con semaforo): il blocco 2×2 ha strade in uscita su almeno 3 lati.
+ * Le curve a 90° (2 lati) non hanno semaforo. */
+const isIntersection = (map: CityMap, x: number, y: number): boolean => {
+  if (!isJunction(map, x, y)) return false;
+  const bx = isJunction(map, x - 1, y) ? x - 1 : x;
+  const by = isJunction(map, x, y - 1) ? y - 1 : y;
+  const road = (tx: number, ty: number): boolean => laneAt(map, tx, ty) !== 0;
+  const sides = [road(bx, by - 1), road(bx, by + 2), road(bx - 1, by), road(bx + 2, by)];
+  return sides.filter(Boolean).length >= 3;
+};
+
 export const isIntersectionTile = (map: CityMap, t: Vec2): boolean => isIntersection(map, t.x, t.y);
+
+export const isJunctionTile = (map: CityMap, t: Vec2): boolean => isJunction(map, t.x, t.y);
 
 const cache = new WeakMap<CityMap, StopLine[]>();
 

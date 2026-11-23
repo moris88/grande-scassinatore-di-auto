@@ -1,4 +1,4 @@
-export type SoundEvent = "shot" | "explosion" | "crash" | "success" | "fail";
+export type SoundEvent = "shot" | "explosion" | "crash" | "punch" | "success" | "fail";
 
 export interface AudioState {
   /** Velocità dell'auto del giocatore, null se a piedi */
@@ -74,6 +74,7 @@ export class GameAudio {
     if (e === "shot") this.burst(0.08, "bandpass", 1800, 0.5);
     else if (e === "explosion") this.burst(0.9, "lowpass", 350, 1);
     else if (e === "crash") this.burst(0.18, "lowpass", 900, 0.6);
+    else if (e === "punch") this.burst(0.06, "lowpass", 600, 0.5);
     else if (e === "success") this.notes([523, 659, 784, 1047], 0.12);
     else this.notes([392, 330, 262], 0.2);
   }

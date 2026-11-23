@@ -100,10 +100,27 @@ const drawWater = (tx: number, ty: number, px: Px): void => {
 
 const drawPhone = (map: CityMap, tx: number, ty: number, px: Px): void => {
   drawSidewalk(map, tx, ty, px);
-  px(9, 9, 14, 14, "#1a1a1a");
-  px(10, 10, 12, 12, "#d4a017");
-  px(12, 12, 8, 8, "#c0392b");
-  px(14, 14, 4, 4, "#f5f5f5");
+  // Cabina telefonica vista dall'alto: ombra, telaio, vetri, tetto a padiglione
+  px(9, 9, 18, 18, "rgba(0,0,0,0.35)");
+  px(6, 6, 20, 20, "#5e0f0f");
+  px(7, 7, 18, 18, "#b3201d");
+  // Vetri sui quattro lati
+  px(9, 7, 14, 2, "#9fd3e6");
+  px(9, 23, 14, 2, "#9fd3e6");
+  px(7, 9, 2, 14, "#9fd3e6");
+  px(23, 9, 2, 14, "#9fd3e6");
+  // Tetto con falde (bordo chiaro in alto a sinistra, scuro in basso a destra)
+  px(10, 10, 12, 12, "#d6312b");
+  px(10, 10, 12, 1, "#ef6a5f");
+  px(10, 10, 1, 12, "#ef6a5f");
+  px(10, 21, 12, 1, "#7d1512");
+  px(21, 10, 1, 12, "#7d1512");
+  // Insegna "TEL" sul lato alto e lampada (spenta) al centro del tetto
+  px(11, 3, 10, 4, "#f5f5f5");
+  px(12, 4, 1, 2, "#222");
+  px(15, 4, 1, 2, "#222");
+  px(18, 4, 1, 2, "#222");
+  px(14, 14, 4, 4, "#5a4a1a");
 };
 
 const drawSpray = (tx: number, ty: number, px: Px): void => {

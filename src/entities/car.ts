@@ -11,6 +11,8 @@ const MAX_REVERSE = 90;
 const TURN_RATE = 2.8;
 const GRIP = 9;
 const HANDBRAKE_GRIP = 1.4;
+/** Sotto questa velocità la sterzata è ridotta in proporzione (raggio minimo ≈ 21 px) */
+const FULL_TURN_SPEED = 60;
 
 export const CIVIL_COLORS = [
   "#c0392b",
@@ -42,6 +44,7 @@ export const createCar = (pos: Vec2, angle: number, police = false): Car => ({
   driver: "none",
   laneDir: Dir.E,
   aiTarget: null,
+  aiNext: null,
   stuckTime: 0,
   reverseTime: 0,
   pushThroughTime: 0,
@@ -72,7 +75,7 @@ export const updateCarPhysics = (car: Car, ctl: CarControls, dt: number, map: Ci
   if (ctl.handbrake) vf *= Math.exp(-1.6 * dt);
   vl *= Math.exp(-(ctl.handbrake ? HANDBRAKE_GRIP : GRIP) * dt);
 
-  const turnFactor = clamp(vf / 110, -1, 1) * (ctl.handbrake ? 1.4 : 1);
+  const turnFactor = clamp(vf / FULL_TURN_SPEED, -1, 1) * (ctl.handbrake ? 1.4 : 1);
   car.angularVel = ctl.steer * TURN_RATE * turnFactor;
   const newAngle = car.angle + car.angularVel * dt;
   if (!carHitsWall(map, car.pos, newAngle, blocksCars)) car.angle = newAngle;

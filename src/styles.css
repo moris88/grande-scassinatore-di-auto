@@ -78,13 +78,72 @@ body,
   color: #ffe600;
 }
 
-.hud-down {
+/* Banner grande per morte, arresto e missione compiuta: lo schermo si scurisce e il testo
+   arriva ingrandendosi con un leggero rimbalzo */
+.event-banner {
   position: absolute;
-  top: 40%;
-  width: 100%;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: event-fade 0.4s ease-out both;
+}
+
+.event-wasted,
+.event-busted {
+  background: radial-gradient(circle, rgba(90, 0, 0, 0.35) 30%, rgba(40, 0, 0, 0.85) 100%);
+}
+
+.event-success {
+  background: radial-gradient(circle, rgba(0, 60, 0, 0.2) 30%, rgba(0, 30, 0, 0.7) 100%);
+}
+
+.event-title {
+  font-size: clamp(40px, 11vw, 120px);
+  letter-spacing: 4px;
   text-align: center;
-  font-size: 56px;
+  text-shadow: 4px 4px 0 #000, -2px -2px 0 #000;
+  animation: event-zoom 0.7s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+
+.event-wasted .event-title,
+.event-busted .event-title {
   color: #e74c3c;
+}
+
+.event-success .event-title {
+  color: #7dff7d;
+}
+
+.event-detail {
+  margin-top: 12px;
+  font-size: clamp(18px, 3.5vw, 34px);
+  letter-spacing: 1px;
+  color: #ffe600;
+}
+
+@keyframes event-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes event-zoom {
+  from {
+    transform: scale(3);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.game-title {
+  font-size: 34px;
+  line-height: 1.1;
+  letter-spacing: 2px;
+  text-shadow: 3px 3px 0 #8a1c1c;
 }
 
 .overlay {

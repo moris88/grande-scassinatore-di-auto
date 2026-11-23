@@ -17,4 +17,5 @@ export const createPed = (pos: Vec2): Pedestrian => ({
   walkPhase: Math.random() * 10,
   missionTarget: false,
   deadTime: 0,
+  health: 100,
 });

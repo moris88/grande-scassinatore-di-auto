@@ -1,9 +1,9 @@
-import { PED_RADIUS, circleBlocked } from "../engine/collision";
+import { PED_RADIUS, circleBlocked, moveCircle } from "../engine/collision";
 import type { Input } from "../engine/input";
 import { dist } from "../engine/math";
 import type { Pedestrian, WeaponKind } from "../entities/types";
 import { type GameState, playSound, showMessage } from "../game/state";
-import { blocksCars } from "../world/tiles";
+import { blocksCars, blocksPeds } from "../world/tiles";
 import { scarePeds } from "./pedAi";
 import { crime } from "./wantedSystem";
 
@@ -26,6 +26,10 @@ export const WEAPON_NAMES: Record<WeaponKind, string> = {
 
 const ORDER: WeaponKind[] = ["fists", "pistol", "smg"];
 const BULLET_SPEED = 650;
+/** Durata dell'animazione del braccio teso */
+export const PUNCH_ANIM = 0.18;
+const PUNCH_DAMAGE = 50;
+const PUNCH_KNOCKBACK = 6;
 
 /** Uccide un pedone e applica le conseguenze se è stato il giocatore */
 export const killPed = (s: GameState, ped: Pedestrian, byPlayer: boolean): void => {
@@ -36,6 +40,27 @@ export const killPed = (s: GameState, ped: Pedestrian, byPlayer: boolean): void 
   if (!byPlayer) return;
   s.money += 10 * s.multiplier;
   crime(s, 0.35);
+};
+
+/** Pugno (alterna destro e sinistro): 2 colpi stendono un pedone, che intanto arretra e scappa */
+export const punch = (s: GameState): void => {
+  const p = s.player;
+  p.punchTime = PUNCH_ANIM;
+  p.punchLeft = !p.punchLeft;
+  const hit = { x: p.pos.x + Math.cos(p.angle) * 12, y: p.pos.y + Math.sin(p.angle) * 12 };
+  const ped = s.peds.find((q) => q.state !== "dead" && dist(q.pos, hit) < 12);
+  if (!ped) return;
+  playSound(s, "punch");
+  ped.health -= PUNCH_DAMAGE;
+  if (ped.health <= 0) {
+    killPed(s, ped, true);
+    return;
+  }
+  const kx = Math.cos(p.angle) * PUNCH_KNOCKBACK;
+  const ky = Math.sin(p.angle) * PUNCH_KNOCKBACK;
+  moveCircle(s.map, ped.pos, kx, ky, PED_RADIUS, blocksPeds);
+  scarePeds(s, p.pos, 30);
+  crime(s, 0.05);
 };
 
 export const cycleWeapon = (s: GameState): void => {
@@ -53,18 +78,14 @@ export const cycleWeapon = (s: GameState): void => {
 export const updateWeapons = (s: GameState, input: Input, dt: number): void => {
   const p = s.player;
   p.fireCooldown -= dt;
+  p.punchTime = Math.max(0, p.punchTime - dt);
   if (input.wasPressed("KeyQ")) cycleWeapon(s);
   if (p.car || !input.isDown("Space") || p.fireCooldown > 0) return;
 
   const spec = SPECS[p.weapon];
   p.fireCooldown = spec.cooldown;
   if (p.weapon === "fists") {
-    const hit = {
-      x: p.pos.x + Math.cos(p.angle) * 12,
-      y: p.pos.y + Math.sin(p.angle) * 12,
-    };
-    const ped = s.peds.find((q) => q.state !== "dead" && dist(q.pos, hit) < 12);
-    if (ped) killPed(s, ped, true);
+    punch(s);
     return;
   }
   p.ammo[p.weapon]--;

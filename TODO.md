@@ -56,7 +56,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto
 
 ## Verifica finale
 - [x] Biome pulito
-- [x] Test verdi (14 test, incluse simulazioni headless del gioco)
+- [x] Test verdi (18 test, incluse simulazioni headless del gioco)
 - [x] `npm run build` senza errori
 - [ ] Prova di gioco nel browser (da fare a mano: `npm run dev`)
 
@@ -67,12 +67,31 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto
 - [x] Salvataggio punteggio migliore (localStorage, mostrato in menu e game over)
 
 ## Bug da risolvere
-- [ ] Risolvere il problema delle curve per le auto
+Ordine concordato a lotti: A (curve, telefoni, pugni) → B (camion/autobus, ambulanze, agenti a piedi) → C (animazione entrata/uscita auto, elicotteri) → D (treni, binari in superficie) → E (interni dei palazzi su schermata separata + i 4 negozi) → F (missioni di fuga dalla mafia).
+
+Decisioni prese:
+- Negozi: interni con schermata separata (lotto E), si entra dalla porta, menu d'acquisto, si paga con i soldi del gioco.
+- Vestiti: cambiano solo i colori dello sprite; cambiare colore fa perdere le tracce alla polizia se sei inseguito.
+- Veicoli: l'auto comprata compare parcheggiata davanti al negozio; personalizzazione di colore, motore (velocità), blindatura (resistenza agli urti) e freni.
+- Alimentari: cibo e bevande ripristinano la salute; in più una barra della corsa (a piedi), che si consuma correndo; quando è vuota si cammina finché non si ricarica.
+- Mafia: auto della mafia che inseguono e sparano; si vince sopravvivendo per un tempo o raggiungendo un punto sicuro; nascondigli (vicoli/garage) dove restando fermi qualche secondo ti perdono; se ti prendono perdi una vita.
+
+- [x] Risolvere il problema delle curve per le auto (lotto A: svolta pianificata con una tile d'anticipo, raggio minimo di sterzata ridotto da ~39 a ~21 px sotto i 60 px/s, retromarcia se incastrate fuori strada; campioni fuori strada dal 17% a <0,2%)
 - [ ] inserire treni, camion, autobus nel traffico
 - [ ] inserire le ambulanze per i pedoni che vengono investiti o uccisi
 - [ ] inserire elicotteri per il traffico aereo
-- [ ] rivedere i telefoni per le missioni (cabine telefoniche lampeggianti)
-- [ ] se non ho armi da fuoco, il personaggio deve poter dare i pugni e uccidere i nemici corpo a corpo (con animazioni appropriate)
+- [x] rivedere i telefoni per le missioni (lotto A: cabina rossa con vetri, tetto a padiglione e insegna TEL; con missione disponibile la lampada sul tetto si accende con alone pulsante)
+- [x] se non ho armi da fuoco, il personaggio deve poter dare i pugni e uccidere i nemici corpo a corpo (lotto A: jab alternato destro/sinistro con sprite dedicato, 2 pugni stendono un pedone, spinta all'indietro, suono d'impatto)
 - [ ] inserire animazioni che entra in macchina e esce dalla macchina, (possibilità di scivolare sopra la macchina ed entrare in auto)
 - [ ] possibilità di entrare nei palazzi, per missioni di negozi e uffici
 - [ ] possibilità di vedere agenti della polizia all'interno della città e che se sono inseguito che escono dalle autoi per inseguire il giocatore
+- [x] Bug relativi alle auto in coda, come il blocco del traffico o il comportamento irregolare nelle curve (vedi immagine Screenshot 2026-11-23 200115.png) (lotto A: le curve a 90° agli angoli non hanno più semaforo né linea d'arresto, solo gli incroci a T e a croce; vedi anche il fix delle curve)
+- [ ] Introdurre missioni dove sei tu colui che deve essere inseguito o catturato dalla mafia, con possibilità di fuga e nascondigli
+- [ ] Inserire il negozio di armi, con possibilità di acquistare armi e munizioni (le armi devono essere presenti solo nei negozi di armi, non in giro per la città: lotto E rimuove le casse armi dalla mappa)
+- [ ] Inserire il negozio di vestiti, con possibilità di cambiare abbigliamento del personaggio
+- [ ] Inserire il negozio di veicoli, con possibilità di acquistare e personalizzare auto
+- [ ] Inserire il negozio di alimentari, con possibilità di acquistare cibo e bevande (per ripristinare salute o energia)
+- [x] Il gioco si chiama "Grande Scassinatore di Auto", inseriscilo nel menu iniziale (lotto A: titolo grande nel menu e nella scheda del browser)
+- [ ] Aggiungi i parcheggi, dove sono parcheggiate le auto (lotto B)
+- [ ] Se scappi dalla polizia, introdurre un sistema di inseguimento con possibilità di nascondersi o cambiare veicolo, se dopo un tot di tempo che la polizia non ti trova azzerare l'inseguimento, (mostrare un messaggio di fine inseguimento, e le stelline accumulate più sono più agenti ti inseguono, aumentano se continui a commettere crimini) (lotto B, insieme agli agenti a piedi)
+- [x] Inserisci la schermata di quando vieni ucciso e quando passi una missione con successo (lotto A: banner a tutto schermo che si ingrandisce con rimbalzo; rosso per morte/arresto, verde per missione compiuta con ricompensa e moltiplicatore)

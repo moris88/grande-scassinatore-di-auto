@@ -1,5 +1,6 @@
 import type { HudData } from "../game/hud";
 import { WEAPON_NAMES } from "../systems/weaponSystem";
+import { EventBanner } from "./EventBanner";
 import { MissionPopup } from "./MissionPopup";
 
 interface Props {
@@ -36,8 +37,12 @@ export function Hud({ hud }: Props) {
         </div>
       )}
       <MissionPopup message={hud.message} />
-      {hud.downReason && !hud.gameOver && (
-        <div className="hud-down">{hud.downReason === "wasted" ? "SEI MORTO" : "ARRESTATO"}</div>
+      {hud.downReason && !hud.gameOver && <EventBanner kind={hud.downReason} />}
+      {!hud.downReason && hud.successReward !== null && (
+        <EventBanner
+          kind="success"
+          detail={`+$${hud.successReward.toLocaleString("it-IT")} · moltiplicatore x${hud.multiplier}`}
+        />
       )}
     </div>
   );

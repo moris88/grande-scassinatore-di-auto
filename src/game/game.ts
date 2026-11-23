@@ -40,6 +40,7 @@ export const createGame = (): GameState => {
     mission: null,
     phoneCooldown: 0,
     message: null,
+    successBanner: null,
     downTime: 0,
     downReason: null,
     gameOver: false,
@@ -82,6 +83,10 @@ export const updateGame = (s: GameState, input: Input, dt: number): void => {
   if (s.message) {
     s.message.time -= dt;
     if (s.message.time <= 0) s.message = null;
+  }
+  if (s.successBanner) {
+    s.successBanner.time -= dt;
+    if (s.successBanner.time <= 0) s.successBanner = null;
   }
 
   if (s.downReason) {

@@ -5,6 +5,8 @@ import { PauseMenu } from "./components/PauseMenu";
 import { loadBest, saveBest } from "./game/highScore";
 import type { HudData } from "./game/hud";
 
+const GAME_TITLE = "Grande Scassinatore di Auto";
+
 export function App() {
   const [started, setStarted] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -26,7 +28,7 @@ export function App() {
   }, []);
   const togglePause = useCallback(() => setPaused((p) => !p), []);
 
-  if (!started) return <PauseMenu title="MINI GTA '97" best={best} onRestart={restart} />;
+  if (!started) return <PauseMenu title={GAME_TITLE} big best={best} onRestart={restart} />;
 
   return (
     <>

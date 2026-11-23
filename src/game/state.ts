@@ -37,6 +37,8 @@ export interface GameState {
   /** Cabina usata per ultima: non riattiva subito una missione */
   phoneCooldown: number;
   message: { text: string; time: number } | null;
+  /** Schermata grande "MISSIONE COMPIUTA" (ricompensa e secondi rimanenti) */
+  successBanner: { reward: number; time: number } | null;
   /** Schermata "MORTO"/"ARRESTATO" prima del respawn */
   downTime: number;
   downReason: "wasted" | "busted" | null;

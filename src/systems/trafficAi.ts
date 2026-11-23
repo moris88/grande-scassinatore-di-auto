@@ -3,12 +3,19 @@ import type { CarControls } from "../entities/car";
 import { forwardSpeed } from "../entities/car";
 import type { Car } from "../entities/types";
 import type { GameState } from "../game/state";
-import { type CityMap, laneAt, tileCenter, worldToTile } from "../world/cityMap";
-import { ALL_DIRS, type Dir, dirVector, oppositeDir } from "../world/tiles";
-import { isIntersectionTile, lightFor } from "../world/trafficLights";
+import { type CityMap, laneAt, tileAt, tileCenter, worldToTile } from "../world/cityMap";
+import { ALL_DIRS, type Dir, Tile, dirAngle, dirVector, oppositeDir } from "../world/tiles";
+import { isIntersectionTile, isJunctionTile, lightFor } from "../world/trafficLights";
 
 const CRUISE = 95;
-const TURN_CRUISE = 50;
+const TURN_CRUISE = 40;
+/** Anticipo della sterzata rispetto al centro della tile di svolta: è il raggio minimo
+ * di curva della fisica sotto FULL_TURN_SPEED (60 / TURN_RATE 2.8 ≈ 21 px) */
+const TURN_LEAD = 24;
+/** Distanza dalla tile di svolta entro cui si scende a velocità da curva */
+const TURN_BRAKE_DIST = 80;
+/** Secondi da ferma fuori strada prima della retromarcia (e durata della retromarcia) */
+const UNSTUCK_AFTER = 0.7;
 
 /** Sceglie la prossima tile seguendo le corsie, con preferenza ad andare dritto */
 export const chooseNext = (map: CityMap, tile: Vec2, dir: Dir): { dir: Dir; tile: Vec2 } | null => {
@@ -73,7 +80,7 @@ export const steerTowards = (car: Car, target: Vec2, cruise: number): CarControl
   const vf = forwardSpeed(car);
   return {
     steer: clamp(diff * 2.5, -1, 1),
-    throttle: vf < want ? 1 : vf > want + 20 ? -0.5 : 0,
+    throttle: vf < want ? 1 : vf > want + 10 ? -1 : 0,
     handbrake: false,
   };
 };
@@ -86,20 +93,22 @@ export const trafficControls = (car: Car, s: GameState): CarControls => {
     const next = chooseNext(s.map, lane, car.laneDir);
     car.laneDir = next ? next.dir : car.laneDir;
     car.aiTarget = next && lane === here ? next.tile : lane;
+    car.aiNext = null;
   }
-  // Bersaglio raggiunto o superato lungo la direzione di marcia
+  // Pianifica la mossa dopo il bersaglio: se è una svolta si rallenta e si gira in anticipo
+  if (!car.aiNext) car.aiNext = chooseNext(s.map, car.aiTarget, car.laneDir);
+  const turning = car.aiNext !== null && car.aiNext.dir !== car.laneDir;
   const tc = tileCenter(car.aiTarget);
   const dv = dirVector(car.laneDir);
-  const passed = (car.pos.x - tc.x) * dv.x + (car.pos.y - tc.y) * dv.y > -6;
-  if (dist(car.pos, tc) < 18 || (passed && dist(car.pos, tc) < 40)) {
-    const next = chooseNext(s.map, car.aiTarget, car.laneDir);
-    if (next) {
-      car.laneDir = next.dir;
-      car.aiTarget = next.tile;
-    }
+  const along = (car.pos.x - tc.x) * dv.x + (car.pos.y - tc.y) * dv.y;
+  // Bersaglio raggiunto (in curva si inizia a sterzare TURN_LEAD px prima del centro)
+  if (car.aiNext && dist(car.pos, tc) < 56 && along > (turning ? -TURN_LEAD : -6)) {
+    car.laneDir = car.aiNext.dir;
+    car.aiTarget = car.aiNext.tile;
+    car.aiNext = null;
   }
   // Semaforo: col rosso o col giallo ci si ferma prima dell'incrocio
-  const inCrossing = isIntersectionTile(s.map, here);
+  const inCrossing = isJunctionTile(s.map, here);
   if (
     !inCrossing &&
     isIntersectionTile(s.map, car.aiTarget) &&
@@ -120,6 +129,22 @@ export const trafficControls = (car: Car, s: GameState): CarControls => {
     }
     return { steer: 0, throttle: forwardSpeed(car) > 5 ? -1 : 0, handbrake: false };
   }
-  car.stuckTime = 0;
-  return steerTowards(car, tileCenter(car.aiTarget), CRUISE);
+  // Fuori strada e incastrata (es. muso contro un muro dopo un urto): retromarcia girando
+  // il muso verso la corsia (in retromarcia la sterzata è invertita)
+  const target = tileCenter(car.aiTarget);
+  if (car.reverseTime > 0) {
+    car.reverseTime -= 1 / 60;
+    const diff = wrapAngle(angleTo(car.pos, target) - car.angle);
+    return { steer: -Math.sign(diff), throttle: -1, handbrake: false };
+  }
+  const offRoad = tileAt(s.map, here.x, here.y) !== Tile.Road;
+  car.stuckTime = offRoad && Math.abs(forwardSpeed(car)) < 10 ? car.stuckTime + 1 / 60 : 0;
+  if (car.stuckTime > UNSTUCK_AFTER) {
+    car.stuckTime = 0;
+    car.reverseTime = UNSTUCK_AFTER;
+  }
+  // Svolta in arrivo o muso non ancora allineato alla corsia: velocità da curva
+  const misaligned = Math.abs(wrapAngle(dirAngle(car.laneDir) - car.angle)) > 0.25;
+  const slow = misaligned || (turning && along > -TURN_BRAKE_DIST);
+  return steerTowards(car, target, slow ? TURN_CRUISE : CRUISE);
 };

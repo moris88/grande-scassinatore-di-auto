@@ -5,7 +5,7 @@ import { PHONE_BOOTHS, tileCenter } from "../world/cityMap";
 import { dirVector } from "../world/tiles";
 import { lightFor, stopLines } from "../world/trafficLights";
 import { drawMinimap } from "./minimap";
-import { carSprite, deadPedSprite, pedSprite, pickupSprite } from "./sprites";
+import { carSprite, deadPedSprite, pedSprite, pickupSprite, punchSprite } from "./sprites";
 
 const drawRotated = (
   g: CanvasRenderingContext2D,
@@ -136,13 +136,17 @@ export const renderGame = (
 
   drawTrafficLights(g, s);
 
-  // Cabine attive lampeggianti
+  // Cabine attive: lampada sul tetto accesa a intermittenza con alone che pulsa
   if (!s.mission && Math.floor(s.time * 2) % 2 === 0) {
-    g.strokeStyle = "#ffe600";
-    g.lineWidth = 2;
+    const pulse = (s.time * 2) % 1;
     for (const b of PHONE_BOOTHS) {
       const c = tileCenter(b);
-      g.strokeRect(c.x - 12, c.y - 12, 24, 24);
+      g.fillStyle = `rgba(255,230,0,${0.45 * (1 - pulse)})`;
+      g.beginPath();
+      g.arc(c.x, c.y, 8 + pulse * 14, 0, Math.PI * 2);
+      g.fill();
+      g.fillStyle = "#ffe600";
+      g.fillRect(c.x - 2, c.y - 2, 4, 4);
     }
   }
 
@@ -156,8 +160,13 @@ export const renderGame = (
       drawRotated(g, pedSprite(p.color, Math.floor(p.walkPhase) % 2), p.pos, p.angle);
 
   const pl = s.player;
-  if (!pl.car && !s.downReason)
-    drawRotated(g, pedSprite("#4a6b2a", Math.floor(pl.walkPhase) % 2), pl.pos, pl.angle);
+  if (!pl.car && !s.downReason) {
+    const sprite =
+      pl.punchTime > 0
+        ? punchSprite("#4a6b2a", pl.punchLeft)
+        : pedSprite("#4a6b2a", Math.floor(pl.walkPhase) % 2);
+    drawRotated(g, sprite, pl.pos, pl.angle);
+  }
   if (!pl.car && s.downReason === "wasted")
     drawRotated(g, deadPedSprite("#4a6b2a"), pl.pos, pl.angle);
   for (const c of s.cars) if (!c.dead) drawCar(g, s, c);
