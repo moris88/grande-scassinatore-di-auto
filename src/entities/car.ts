@@ -17,6 +17,8 @@ const FULL_TURN_SPEED = 60;
 const ENGINE_BOOST = 1.3;
 const BRAKES_BOOST = 1.5;
 const ARMOR_FACTOR = 0.5;
+/** Prestazioni minime (frazione) di un veicolo quasi distrutto */
+const DAMAGE_MIN_PERF = 0.55;
 
 export const CIVIL_COLORS = [
   "#c0392b",
@@ -89,8 +91,10 @@ const hitsWall = (map: CityMap, car: Car, pos: Vec2, angle: number): boolean =>
 export const updateCarPhysics = (car: Car, ctl: CarControls, dt: number, map: CityMap): number => {
   const up = car.upgrades;
   const engine = up.engine ? ENGINE_BOOST : 1;
-  const maxSpeed = VEHICLES[car.kind].maxSpeed * engine;
-  const accel = ACCEL * VEHICLES[car.kind].accel * engine;
+  // Un veicolo danneggiato rende meno: a pezzi va a poco più di metà
+  const worn = DAMAGE_MIN_PERF + (1 - DAMAGE_MIN_PERF) * healthRatio(car);
+  const maxSpeed = VEHICLES[car.kind].maxSpeed * engine * worn;
+  const accel = ACCEL * VEHICLES[car.kind].accel * engine * worn;
   const brake = BRAKE * VEHICLES[car.kind].brake * (up.brakes ? BRAKES_BOOST : 1);
   const cos = Math.cos(car.angle);
   const sin = Math.sin(car.angle);
@@ -165,3 +169,7 @@ export const exitPoint = (car: Car): Vec2 => {
 export const damageCar = (car: Car, amount: number): void => {
   car.health -= amount * VEHICLES[car.kind].armor * (car.upgrades.armor ? ARMOR_FACTOR : 1);
 };
+
+/** Salute residua del veicolo rispetto a quella del suo modello (0..1) */
+export const healthRatio = (car: Car): number =>
+  clamp(car.health / VEHICLES[car.kind].health, 0, 1);

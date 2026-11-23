@@ -1,4 +1,5 @@
 import { type Vec2, angleTo, dist } from "../engine/math";
+import { healthRatio } from "../entities/car";
 import type { Car } from "../entities/types";
 import { type GameState, stars } from "../game/state";
 import { hasSiren } from "../systems/trafficAi";
@@ -13,6 +14,7 @@ import { drawParkingRoofs } from "./parkingRoofs";
 import { drawPlayer } from "./playerRenderer";
 import { copSprite, deadPedSprite, pedSprite } from "./sprites";
 import { drawRailway } from "./trainRenderer";
+import { drawVehicleDamage } from "./vehicleDamage";
 import { vehicleSprite } from "./vehicleSprites";
 
 const drawRotated = (
@@ -30,6 +32,7 @@ const drawRotated = (
 
 const drawCar = (g: CanvasRenderingContext2D, s: GameState, car: Car): void => {
   drawRotated(g, vehicleSprite(car.kind, car.color, car.police, car.dead), car.pos, car.angle);
+  drawVehicleDamage(g, car);
   if (car.dead) return;
   // Sirene lampeggianti: volanti durante l'inseguimento, ambulanze in servizio
   const siren = (car.police && stars(s) > 0) || hasSiren(car, s);
@@ -46,7 +49,7 @@ const drawCar = (g: CanvasRenderingContext2D, s: GameState, car: Car): void => {
     g.restore();
   }
   // Fumo e fiamme
-  if (car.health < 40) {
+  if (healthRatio(car) < 0.4) {
     const t = s.time * 3 + car.id;
     g.fillStyle =
       car.health <= 0 ? (Math.floor(t * 4) % 2 ? "#ff8c1a" : "#ffd23f") : "rgba(90,90,90,0.6)";

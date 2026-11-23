@@ -6,6 +6,7 @@ import type { Car } from "../entities/types";
 import { VEHICLES } from "../entities/vehicles";
 import { crime, loseIdentity } from "../systems/wantedSystem";
 import { blocksPeds } from "../world/tiles";
+import { sellCar } from "./carSales";
 import { type GameState, showMessage } from "./state";
 
 /** Velocità a piedi verso la portiera e durante la scivolata sul cofano */
@@ -94,6 +95,8 @@ export const updateTransition = (s: GameState, dt: number): boolean => {
   if (tr.path.length === 0) {
     if (tr.kind === "exit") {
       pl.transition = null;
+      // Scendendo in un garage o davanti al concessionario l'auto si vende
+      sellCar(s, car);
       return false;
     }
     tr.getIn += dt;

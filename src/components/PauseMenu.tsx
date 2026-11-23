@@ -33,9 +33,10 @@ export function PauseMenu({ title, big, best, score, newRecord, onResume, onRest
           <p>Spazio: spara (a piedi) / freno a mano (in auto)</p>
           <p>Q: cambia arma · M: audio on/off · Esc: pausa</p>
           <p>
-            Cabine ☎ rosse con la luce accesa: missioni · Garage: cambia colore all'auto ($100, da
-            ricercato $500 e la polizia ti perde) · Ospedale: cuore per la salute ($500)
+            Cabine ☎ rosse con la luce accesa: missioni · Garage: ripara e riverniscia ($100, da
+            ricercato $500 e la polizia ti perde) · Ospedale: cuore gratis per la salute
           </p>
+          <p>Scendi dall'auto in un garage o davanti al concessionario per venderla</p>
         </div>
       </div>
     </div>
