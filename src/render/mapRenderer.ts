@@ -24,7 +24,7 @@ const SHOP_SIGNS: Record<ShopKind, string> = {
 const ROOFS = ["#7a5c4f", "#6b6b7a", "#8a7f6a", "#5e6e5e", "#7d4f4f", "#6a5a72"];
 
 /** Hash deterministico per dettagli "casuali" ma stabili */
-const hash = (x: number, y: number, k = 0): number => {
+export const hash = (x: number, y: number, k = 0): number => {
   let h = (x * 374761393 + y * 668265263 + k * 2147483647) | 0;
   h = Math.imul(h ^ (h >>> 13), 1274126177);
   return ((h ^ (h >>> 16)) >>> 0) / 4294967295;

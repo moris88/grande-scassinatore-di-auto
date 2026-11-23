@@ -5,6 +5,7 @@ import { hasSiren } from "../systems/trafficAi";
 import { PHONE_BOOTHS, tileCenter } from "../world/cityMap";
 import { dirVector } from "../world/tiles";
 import { lightFor, stopLines } from "../world/trafficLights";
+import { drawBuildings3D } from "./buildings3d";
 import { drawFires } from "./fireRenderer";
 import { drawHelicopters } from "./helicopterRenderer";
 import { drawMinimap } from "./minimap";
@@ -177,6 +178,7 @@ export const renderGame = (
   drawRailway(g, s);
   drawFires(g, s);
   drawPlayer(g, s, true);
+  drawBuildings3D(g, s, mapCanvas, { x: sx, y: sy, w: sw, h: sh });
   drawParkingRoofs(g, s);
 
   g.fillStyle = "#ffe98a";

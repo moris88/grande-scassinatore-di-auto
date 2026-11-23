@@ -113,4 +113,4 @@ Decisioni prese:
 - [ ] implementare il sistema di reazioni dei pedoni agli eventi della città (lotto B: i pedoni reagiscono a incidenti, crimini, sirene e altri eventi con comportamenti realistici, come scappare, chiamare la polizia o fermarsi a guardare)
 
 - [ ] sistema gli angoli della mappa, dove ci sono gli incroci senza semaforo inserisci le curve (non sono degli incroci)
-- [ ] Migliorare la grafica dei palazzi, renderli 3D (richiesta durante il lavoro)
+- [x] Migliorare la grafica dei palazzi, renderli 3D (prospettiva dall'alto: tetto sollevato verso la camera, pareti ombreggiate per lato con finestre per piano e qualche luce accesa, 3 altezze per isolato; coprono chi passa dietro; le porte dei negozi restano incassate)
