@@ -18,6 +18,7 @@ import { isBusted, updateWanted } from "../systems/wantedSystem";
 import { updateBullets, updateWeapons } from "../systems/weaponSystem";
 import { HOSPITAL, PLAYER_START, POLICE_STATION, buildCity, tileCenter } from "../world/cityMap";
 import { updateCars } from "./carUpdate";
+import { updatePaint } from "./paintJob";
 import { updatePlayerControl } from "./playerControl";
 import { updateShop } from "./shopSystem";
 import { type GameState, showMessage } from "./state";
@@ -60,6 +61,7 @@ export const createGame = (): GameState => {
     gameOver: false,
     bustTimer: 0,
     inGarage: false,
+    paintJob: null,
     time: 0,
     sounds: [],
   };
@@ -127,6 +129,7 @@ export const updateGame = (s: GameState, input: Input, dt: number): void => {
   updateBullets(s, dt);
   updateEntityCollisions(s);
   updateWanted(s, dt);
+  updatePaint(s, dt);
   updateMissions(s, dt);
   updateAmbulances(s, dt);
   updatePedChatter(s, dt);

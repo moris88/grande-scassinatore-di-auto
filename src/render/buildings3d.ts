@@ -2,6 +2,7 @@ import type { Vec2 } from "../engine/math";
 import type { GameState } from "../game/state";
 import { tileAt } from "../world/cityMap";
 import { TILE, Tile } from "../world/tiles";
+import { ENTRANCES } from "./entrances";
 import { hash } from "./mapRenderer";
 
 /** "Altezza" virtuale della camera: più è bassa, più i palazzi si inclinano */
@@ -24,7 +25,7 @@ const heightAt = (tx: number, ty: number): number =>
   HEIGHTS[Math.floor(hash(Math.floor(tx / 7), Math.floor(ty / 6), 11) * HEIGHTS.length)];
 
 const isBuilding = (s: GameState, tx: number, ty: number): boolean =>
-  tileAt(s.map, tx, ty) === Tile.Building;
+  tileAt(s.map, tx, ty) === Tile.Building || tileAt(s.map, tx, ty) === Tile.Door;
 
 /** Punto del tetto: il vertice alla base "sollevato" verso la camera (prospettiva dall'alto) */
 const lift = (p: Vec2, cam: Vec2, h: number): Vec2 => {
@@ -111,12 +112,37 @@ export const drawBuildings3D = (
       ["w", -1, 0, 3, 0],
     ];
     for (const [side, dx, dy, a, b] of sides) {
-      if (!lower(dx, dy)) continue;
+      // Solo pareti rivolte verso la camera: quelle sul retro sbucavano da sotto i tetti vicini
+      const facing =
+        (dx && (cam.x - (x0 + TILE / 2)) * dx > TILE / 2) ||
+        (dy && (cam.y - (y0 + TILE / 2)) * dy > TILE / 2);
+      if (!facing || !lower(dx, dy)) continue;
       quad(g, [c[a], c[b], r[b], r[a]], "#4a4038");
       drawWindows(g, c[a], c[b], r[a], r[b], h, tx + ty);
       quad(g, [c[a], c[b], r[b], r[a]], WALL_SHADE[side]);
+      const ent = ENTRANCES.find((e) => e.door.x === tx && e.door.y === ty);
+      if (ent && ent.outside.x === tx + dx && ent.outside.y === ty + dy) {
+        // Porta e tenda sulla facciata verso il marciapiede
+        const p = (u: number, t: number) => lerp(lerp(c[a], c[b], u), lerp(r[a], r[b], u), t);
+        quad(g, [p(0.35, 0), p(0.65, 0), p(0.65, 0.35), p(0.35, 0.35)], "#3b2a1a");
+        quad(g, [p(0.15, 0.35), p(0.85, 0.35), p(0.85, 0.45), p(0.15, 0.45)], ent.color);
+      }
     }
     // Tetto: la tile del tetto già disegnata sulla mappa, ingrandita e spostata
     g.drawImage(mapCanvas, x0, y0, TILE, TILE, r[0].x, r[0].y, r[2].x - r[0].x, r[2].y - r[0].y);
+  }
+};
+
+/** Insegne sopra il tetto sollevato, intere e leggibili (negozi, ospedale, caserma) */
+export const drawEntranceSigns = (g: CanvasRenderingContext2D, s: GameState): void => {
+  g.font = "bold 8px monospace";
+  for (const e of ENTRANCES) {
+    const base = { x: (e.door.x + 0.5) * TILE, y: (e.door.y + 0.5) * TILE };
+    const p = lift(base, s.camera.pos, heightAt(e.door.x, e.door.y));
+    const w = e.label.length * 5 + 4;
+    g.fillStyle = e.color;
+    g.fillRect(p.x - w / 2, p.y - 6, w, 10);
+    g.fillStyle = "#ffe600";
+    g.fillText(e.label, p.x - w / 2 + 2, p.y + 2);
   }
 };

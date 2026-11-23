@@ -79,6 +79,8 @@ export interface GameState {
   bustTimer: number;
   /** Il giocatore è dentro un garage con l'auto (la riverniciatura avviene una volta per ingresso) */
   inGarage: boolean;
+  /** Verniciatura in corso nel garage: auto ferma, colore che passa da `from` a `to` */
+  paintJob: { car: Car; from: string; to: string; time: number } | null;
   time: number;
   /** Suoni da riprodurre nel prossimo frame */
   sounds: SoundEvent[];

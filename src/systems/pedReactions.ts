@@ -42,10 +42,10 @@ const watch = (p: Pedestrian, at: Vec2, time = WATCH_TIME): void => {
 };
 
 /** Reato commesso dal giocatore: la maggior parte scappa, qualcuno guarda,
- * qualcuno chiama la polizia */
-export const reactToCrime = (s: GameState, at: Vec2): void => {
+ * qualcuno chiama la polizia. La vittima (`victim`) non fa da spettatrice. */
+export const reactToCrime = (s: GameState, at: Vec2, victim?: Pedestrian): void => {
   for (const p of s.peds) {
-    if (p.role === "cop" || p.state === "dead" || p.state === "call") continue;
+    if (p === victim || p.role === "cop" || p.state === "dead" || p.state === "call") continue;
     if (dist(p.pos, at) > NOTICE_RADIUS) continue;
     const r = Math.random();
     if (r < 0.2) {

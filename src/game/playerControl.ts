@@ -5,6 +5,7 @@ import { updatePlayerOnFoot } from "../entities/player";
 import type { Car } from "../entities/types";
 import { stepSurface } from "./audioLevels";
 import { enterRange, startEnter, startExit, updateTransition } from "./carTransition";
+import { isBeingPainted } from "./paintJob";
 import { enterShop, shopAtDoor } from "./shopSystem";
 import { type GameState, playSound } from "./state";
 
@@ -30,7 +31,8 @@ export const updatePlayerControl = (s: GameState, input: Input, dt: number): voi
   if (updateTransition(s, dt)) return;
   if (input.wasPressed("KeyE", "Enter")) {
     if (pl.car) {
-      if (Math.abs(forwardSpeed(pl.car)) < MAX_EXIT_SPEED && startExit(s, pl.car)) return;
+      const canExit = Math.abs(forwardSpeed(pl.car)) < MAX_EXIT_SPEED && !isBeingPainted(s, pl.car);
+      if (canExit && startExit(s, pl.car)) return;
     } else {
       // Davanti alla porta di un negozio si entra (ha la precedenza sulle auto)
       const shop = shopAtDoor(s);
@@ -48,6 +50,12 @@ export const updatePlayerControl = (s: GameState, input: Input, dt: number): voi
   if (pl.car) {
     const car = pl.car;
     const ctl = { throttle: input.axisY(), steer: input.axisX(), handbrake: input.isDown("Space") };
+    // In verniciatura l'auto resta ferma nel garage
+    if (isBeingPainted(s, car)) {
+      ctl.throttle = 0;
+      ctl.steer = 0;
+      ctl.handbrake = true;
+    }
     if (car.health <= 0) ctl.throttle = 0;
     const impact = updateCarPhysics(car, ctl, dt, s.map);
     applyImpactDamage(car, impact);

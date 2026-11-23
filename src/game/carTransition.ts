@@ -76,8 +76,7 @@ const takeSeat = (s: GameState, car: Car): void => {
     ped.fleeTime = 4;
     s.peds.push(ped);
     say(ped, LINES.jacked, true);
-    reactToCrime(s, car.pos);
-    ped.state = "flee"; // il derubato scappa comunque
+    reactToCrime(s, car.pos, ped);
     crime(s, car.police ? 1 : 0.1);
   }
   car.driver = "player";

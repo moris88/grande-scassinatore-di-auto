@@ -66,7 +66,7 @@ export const punch = (s: GameState): void => {
   const kx = Math.cos(p.angle) * PUNCH_KNOCKBACK;
   const ky = Math.sin(p.angle) * PUNCH_KNOCKBACK;
   moveCircle(s.map, ped.pos, kx, ky, PED_RADIUS, blocksPeds);
-  reactToCrime(s, p.pos);
+  reactToCrime(s, p.pos, ped);
   scarePeds(s, p.pos, 30); // chi viene colpito scappa sempre
   crime(s, ped.role === "cop" ? 0.3 : 0.05);
 };

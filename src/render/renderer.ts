@@ -6,10 +6,11 @@ import { hasSiren } from "../systems/trafficAi";
 import { PHONE_BOOTHS, tileCenter } from "../world/cityMap";
 import { dirVector } from "../world/tiles";
 import { lightFor, stopLines } from "../world/trafficLights";
-import { drawBuildings3D } from "./buildings3d";
+import { drawBuildings3D, drawEntranceSigns } from "./buildings3d";
 import { drawFires } from "./fireRenderer";
 import { drawHelicopters } from "./helicopterRenderer";
 import { drawMinimap } from "./minimap";
+import { drawPaintJob } from "./paintRenderer";
 import { drawParkingRoofs } from "./parkingRoofs";
 import { drawPlayer } from "./playerRenderer";
 import { drawPedSpeech } from "./speechRenderer";
@@ -179,10 +180,12 @@ export const renderGame = (
   const pl = s.player;
   drawPlayer(g, s, false);
   for (const c of s.cars) if (!c.dead) drawCar(g, s, c);
+  drawPaintJob(g, s);
   drawRailway(g, s);
   drawFires(g, s);
   drawPlayer(g, s, true);
   drawBuildings3D(g, s, mapCanvas, { x: sx, y: sy, w: sw, h: sh });
+  drawEntranceSigns(g, s);
   drawParkingRoofs(g, s);
 
   g.fillStyle = "#ffe98a";

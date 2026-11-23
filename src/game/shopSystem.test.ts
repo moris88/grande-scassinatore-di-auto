@@ -13,6 +13,7 @@ import {
 } from "../world/cityMap";
 import { Tile } from "../world/tiles";
 import { createGame, updateGame } from "./game";
+import { PAINT_TIME, updatePaint } from "./paintJob";
 import { CAR_COLORS, JACKETS } from "./shopCatalog";
 import { buyItem, enterShop, shopAtDoor } from "./shopSystem";
 
@@ -160,7 +161,12 @@ describe("ospedale, caserma e garage", () => {
     s.searchTime = 30; // inseguimento in corso
     const before = car.color;
     updateWanted(s, 1 / 60);
+    // Verniciatura in corso: il colore nuovo arriva a fine lavoro
+    expect(s.paintJob?.car).toBe(car);
+    expect(car.color).toBe(before);
+    updatePaint(s, PAINT_TIME);
     expect(car.color).not.toBe(before);
+    expect(s.paintJob).toBeNull();
     expect(s.heat).toBe(0);
     expect(s.money).toBe(500);
     updateWanted(s, 1 / 60);

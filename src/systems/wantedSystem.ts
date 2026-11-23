@@ -1,6 +1,7 @@
 import { dist, pick } from "../engine/math";
 import { CIVIL_COLORS, forwardSpeed } from "../entities/car";
 import { VEHICLES } from "../entities/vehicles";
+import { startPaint } from "../game/paintJob";
 import { type GameState, playSound, showMessage, stars } from "../game/state";
 import { tileAtWorld } from "../world/cityMap";
 import { Tile } from "../world/tiles";
@@ -84,7 +85,7 @@ const updateGarage = (s: GameState): void => {
     return;
   }
   s.money -= cost;
-  car.color = pick(CIVIL_COLORS.filter((c) => c !== car.color));
+  startPaint(s, car, pick(CIVIL_COLORS.filter((c) => c !== car.color)));
   car.health = VEHICLES[car.kind].health; // Riverniciata e anche riparata
   if (wanted) {
     s.heat = 0;
