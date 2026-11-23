@@ -56,7 +56,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto
 
 ## Verifica finale
 - [x] Biome pulito
-- [x] Test verdi (67 test, incluse simulazioni headless del gioco)
+- [x] Test verdi (72 test, incluse simulazioni headless del gioco)
 - [x] `npm run build` senza errori
 - [ ] Prova di gioco nel browser (da fare a mano: `npm run dev`)
 
@@ -109,8 +109,8 @@ Decisioni prese:
 - [x] ridurre il numero degli elicotteri e introdurre (con lo stesso tempo di comparsa) l'aereo che attraversa la città seguendo un percorso prestabilito (lotto B: l'aereo compare ai bordi della mappa e vola sopra la città, visibile dai giocatori; non interagisce con il traffico aereo o terrestre) (fatto: al massimo 1 elicottero; l'aereo compare con la stessa frequenza, su una di 3 rotte fisse da bordo a bordo, quella che passa più vicino alla camera; vola alto con ombra molto spostata, a 260 px/s, senza interazioni)
 - [x] inserire il suono dei passi del giocatore (lotto B: il suono varia in base al tipo di superficie su cui cammina il personaggio, ad esempio asfalto, erba, pavimento interno) (fatto: un passo ogni mezzo ciclo di camminata, più fitti di corsa; suoni diversi per asfalto, marciapiede in pietra, erba, ghiaia dei binari e interni come parcheggi coperti e garage)
 - [x] implementare il sistema di suoni ambientali (lotto B: includere suoni di traffico, sirene, passi dei pedoni, animali e altri effetti sonori per rendere la città più viva) (fatto: brusio del traffico secondo i veicoli vicini, passi lontani dei pedoni, uccellini vicino ai parchi, cani che abbaiano e clacson lontani occasionali, oltre alle sirene già presenti; nei negozi la città tace)
-- [ ] implementare il sistema di dialoghi con i pedoni (lotto B: i pedoni reagiscono alle azioni del giocatore con frasi e comportamenti diversi, ad esempio saluti, insulti o richieste di aiuto)
-- [ ] implementare il sistema di reazioni dei pedoni agli eventi della città (lotto B: i pedoni reagiscono a incidenti, crimini, sirene e altri eventi con comportamenti realistici, come scappare, chiamare la polizia o fermarsi a guardare)
+- [x] implementare il sistema di dialoghi con i pedoni (lotto B: i pedoni reagiscono alle azioni del giocatore con frasi e comportamenti diversi, ad esempio saluti, insulti o richieste di aiuto) (fatto: nuvolette sopra la testa; saluti se passi tranquillo, suppliche se impugni un'arma, urla se li colpisci, insulti se li sfiori in auto, "Ladro!" se gli rubi l'auto)
+- [x] implementare il sistema di reazioni dei pedoni agli eventi della città (lotto B: i pedoni reagiscono a incidenti, crimini, sirene e altri eventi con comportamenti realistici, come scappare, chiamare la polizia o fermarsi a guardare) (fatto: ai reati la maggior parte scappa, qualcuno guarda e qualcuno chiama la polizia, telefono in mano; dopo 3 s la chiamata alza il ricercato; agli incidenti molti si fermano a guardare; alle esplosioni scappano tutti; al passaggio delle sirene si girano a guardare)
 
 - [ ] sistema gli angoli della mappa, dove ci sono gli incroci senza semaforo inserisci le curve (non sono degli incroci)
 - [x] Migliorare la grafica dei palazzi, renderli 3D (prospettiva dall'alto: tetto sollevato verso la camera, pareti ombreggiate per lato con finestre per piano e qualche luce accesa, 3 altezze per isolato; coprono chi passa dietro; le porte dei negozi restano incassate)

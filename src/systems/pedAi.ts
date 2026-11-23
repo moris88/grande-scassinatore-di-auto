@@ -1,11 +1,14 @@
 import { PED_RADIUS, moveCircle } from "../engine/collision";
 import { type Vec2, angleTo, dist, pick } from "../engine/math";
 import type { Pedestrian } from "../entities/types";
-import type { GameState } from "../game/state";
+import { type GameState, showMessage } from "../game/state";
 import { tileAt, tileCenter, worldToTile } from "../world/cityMap";
 import { ALL_DIRS, blocksPeds, dirVector, isWalkable } from "../world/tiles";
+import { crime } from "./wantedSystem";
 
 const FLEE_SPEED = 100;
+/** Aumento del ricercato quando un passante riesce a chiamare la polizia */
+const CALL_HEAT = 0.4;
 
 /** Prossima tile pedonale adiacente, preferendo proseguire dritto */
 const nextWalkTarget = (s: GameState, p: Pedestrian): Vec2 | null => {
@@ -36,6 +39,22 @@ export const scarePeds = (s: GameState, from: Vec2, radius: number): void => {
 export const updatePed = (s: GameState, p: Pedestrian, dt: number): void => {
   if (p.state === "dead") {
     p.deadTime += dt;
+    return;
+  }
+  if (p.state === "watch" || p.state === "call") {
+    p.reactTime -= dt;
+    if (p.state === "watch" && p.lookAt) p.angle = angleTo(p.pos, p.lookAt);
+    if (p.reactTime > 0) return;
+    if (p.state === "call") {
+      // Chiamata andata a segno: la polizia è avvisata, poi il passante si allontana
+      crime(s, CALL_HEAT);
+      if (dist(p.pos, s.player.pos) < 400) showMessage(s, "Un passante ha chiamato la polizia!", 2);
+      p.state = "flee";
+      p.fleeTime = 3;
+      return;
+    }
+    p.state = "walk";
+    p.target = null;
     return;
   }
   if (p.state === "flee") {

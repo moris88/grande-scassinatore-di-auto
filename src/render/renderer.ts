@@ -12,6 +12,7 @@ import { drawHelicopters } from "./helicopterRenderer";
 import { drawMinimap } from "./minimap";
 import { drawParkingRoofs } from "./parkingRoofs";
 import { drawPlayer } from "./playerRenderer";
+import { drawPedSpeech } from "./speechRenderer";
 import { copSprite, deadPedSprite, pedSprite } from "./sprites";
 import { drawRailway } from "./trainRenderer";
 import { drawVehicleDamage } from "./vehicleDamage";
@@ -193,6 +194,7 @@ export const renderGame = (
     g.arc(e.pos.x, e.pos.y, r, 0, Math.PI * 2);
     g.fill();
   }
+  drawPedSpeech(g, s);
   drawHelicopters(g, s);
   if (!s.downReason) drawMissionArrow(g, s, pl.car ? pl.car.pos : pl.pos);
   g.restore();

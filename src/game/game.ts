@@ -10,6 +10,7 @@ import { updateGang } from "../systems/mafiaSystem";
 import { failMission, updateMissions } from "../systems/missionSystem";
 import { fillParking, updateParking } from "../systems/parkingSystem";
 import { updatePed } from "../systems/pedAi";
+import { updatePedChatter } from "../systems/pedReactions";
 import { updateSpawns } from "../systems/spawnSystem";
 import { updateTowing } from "../systems/towSystem";
 import { updateTrains } from "../systems/trainSystem";
@@ -128,6 +129,7 @@ export const updateGame = (s: GameState, input: Input, dt: number): void => {
   updateWanted(s, dt);
   updateMissions(s, dt);
   updateAmbulances(s, dt);
+  updatePedChatter(s, dt);
   updateFires(s, dt);
   updateTowing(s, dt);
   updateGang(s, dt);

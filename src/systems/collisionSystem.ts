@@ -6,6 +6,7 @@ import { VEHICLES, collisionCircles } from "../entities/vehicles";
 import type { GameState } from "../game/state";
 import { blocksCars, blocksPeds } from "../world/tiles";
 import { scarePeds } from "./pedAi";
+import { reactToAccident } from "./pedReactions";
 import { crime } from "./wantedSystem";
 import { killPed } from "./weaponSystem";
 
@@ -53,6 +54,8 @@ const collideCars = (s: GameState, a: Car, b: Car): void => {
     damageCar(b, dmg);
     const pc = s.player.car;
     if ((a === pc && b.police) || (b === pc && a.police)) crime(s, 0.25);
+    // Scontro violento col giocatore: i passanti si fermano a guardare
+    if (a === pc || b === pc) reactToAccident(s, a.pos);
   }
 };
 
@@ -70,8 +73,10 @@ export const updateEntityCollisions = (s: GameState): void => {
       circles.some((c) => dist(c.c, p) < Math.max(c.r, CAR_RADIUS) + PED_RADIUS);
     for (const p of s.peds) {
       if (p.state === "dead" || !touches(p.pos)) continue;
-      if (speed > KILL_SPEED) killPed(s, p, car.driver === "player");
-      else {
+      if (speed > KILL_SPEED) {
+        killPed(s, p, car.driver === "player");
+        reactToAccident(s, p.pos);
+      } else {
         const a = Math.atan2(p.pos.y - car.pos.y, p.pos.x - car.pos.x);
         p.pos.x += Math.cos(a) * 2;
         p.pos.y += Math.sin(a) * 2;

@@ -4,6 +4,7 @@ import { exitPoint } from "../entities/car";
 import { createPed } from "../entities/pedestrian";
 import type { Car } from "../entities/types";
 import { VEHICLES } from "../entities/vehicles";
+import { LINES, reactToCrime, say } from "../systems/pedReactions";
 import { crime, loseIdentity } from "../systems/wantedSystem";
 import { blocksPeds } from "../world/tiles";
 import { sellCar } from "./carSales";
@@ -74,6 +75,9 @@ const takeSeat = (s: GameState, car: Car): void => {
     ped.state = "flee";
     ped.fleeTime = 4;
     s.peds.push(ped);
+    say(ped, LINES.jacked, true);
+    reactToCrime(s, car.pos);
+    ped.state = "flee"; // il derubato scappa comunque
     crime(s, car.police ? 1 : 0.1);
   }
   car.driver = "player";

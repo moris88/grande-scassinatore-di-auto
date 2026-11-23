@@ -21,6 +21,10 @@ export const createPed = (pos: Vec2): Pedestrian => ({
   health: 100,
   role: "civil",
   shootCooldown: 0,
+  speech: null,
+  speechCooldown: 0,
+  lookAt: null,
+  reactTime: 0,
 });
 
 /** Agente di polizia a piedi (in divisa, più resistente) */

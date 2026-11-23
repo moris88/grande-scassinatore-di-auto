@@ -50,7 +50,8 @@ export interface Pedestrian {
   angle: number;
   speed: number;
   color: string;
-  state: "walk" | "flee" | "dead";
+  /** watch = si ferma a guardare un evento, call = chiama la polizia col telefono */
+  state: "walk" | "flee" | "dead" | "watch" | "call";
   target: Vec2 | null;
   fleeTime: number;
   walkPhase: number;
@@ -62,6 +63,12 @@ export interface Pedestrian {
   role: "civil" | "cop";
   /** Secondi prima del prossimo colpo (solo agenti) */
   shootCooldown: number;
+  /** Frase nella nuvoletta (con i secondi rimasti) e attesa prima di poter riparlare */
+  speech: { text: string; time: number } | null;
+  speechCooldown: number;
+  /** Punto verso cui guarda (watch) e secondi rimasti della reazione (watch/call) */
+  lookAt: Vec2 | null;
+  reactTime: number;
 }
 
 export interface Player {

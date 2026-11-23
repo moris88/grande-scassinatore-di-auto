@@ -6,6 +6,7 @@ import type { Pedestrian, WeaponKind } from "../entities/types";
 import { type GameState, playSound } from "../game/state";
 import { blocksCars, blocksPeds } from "../world/tiles";
 import { scarePeds } from "./pedAi";
+import { LINES, reactToCrime, say } from "./pedReactions";
 import { crime } from "./wantedSystem";
 
 interface WeaponSpec {
@@ -38,7 +39,9 @@ export const killPed = (s: GameState, ped: Pedestrian, byPlayer: boolean): void 
   if (ped.state === "dead") return;
   ped.state = "dead";
   ped.deadTime = 0;
-  scarePeds(s, ped.pos, 120);
+  // Omicidio del giocatore: i passanti reagiscono (scappano, guardano, chiamano la polizia)
+  if (byPlayer) reactToCrime(s, ped.pos);
+  else scarePeds(s, ped.pos, 120);
   if (!byPlayer) return;
   s.money += 10 * s.multiplier;
   // Uccidere un agente è un reato molto più grave
@@ -54,6 +57,7 @@ export const punch = (s: GameState): void => {
   const ped = s.peds.find((q) => q.state !== "dead" && dist(q.pos, hit) < 12);
   if (!ped) return;
   playSound(s, "punch");
+  say(ped, LINES.hit, true);
   ped.health -= PUNCH_DAMAGE;
   if (ped.health <= 0) {
     killPed(s, ped, true);
@@ -62,7 +66,8 @@ export const punch = (s: GameState): void => {
   const kx = Math.cos(p.angle) * PUNCH_KNOCKBACK;
   const ky = Math.sin(p.angle) * PUNCH_KNOCKBACK;
   moveCircle(s.map, ped.pos, kx, ky, PED_RADIUS, blocksPeds);
-  scarePeds(s, p.pos, 30);
+  reactToCrime(s, p.pos);
+  scarePeds(s, p.pos, 30); // chi viene colpito scappa sempre
   crime(s, ped.role === "cop" ? 0.3 : 0.05);
 };
 
@@ -99,7 +104,7 @@ export const updateWeapons = (s: GameState, input: Input, dt: number): void => {
     life: 0.7,
     fromPlayer: true,
   });
-  scarePeds(s, p.pos, 160);
+  reactToCrime(s, p.pos);
   playSound(s, "shot");
   if (p.ammo[p.weapon] <= 0) cycleWeapon(s);
 };
