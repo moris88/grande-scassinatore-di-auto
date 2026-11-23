@@ -1,4 +1,4 @@
-import { type CityMap, MAP_H, MAP_W, SPRAY_SHOP, laneAt, tileAt } from "../world/cityMap";
+import { type CityMap, MAP_H, MAP_W, RAIL_ROW, SPRAY_SHOP, laneAt, tileAt } from "../world/cityMap";
 import { Dir, TILE, Tile } from "../world/tiles";
 import { shade } from "./sprites";
 
@@ -138,6 +138,18 @@ const drawParking = (map: CityMap, tx: number, ty: number, px: Px): void => {
   if (!same(0, 1) && tileAt(map, tx, ty + 1) === Tile.Building) px(0, TILE - 2, TILE, 2, "#e1b12c");
 };
 
+/** Rotaie con traversine; `ballast` = massicciata in ghiaia (fuori dai passaggi a livello) */
+const drawRail = (tx: number, ty: number, px: Px, ballast: boolean): void => {
+  if (ballast) {
+    px(0, 0, TILE, TILE, "#6b5d4f");
+    for (let i = 0; i < 12; i++)
+      px(Math.floor(hash(tx, ty, i) * 31), Math.floor(hash(ty, tx, i) * 31), 1, 1, "#857565");
+  }
+  for (let x = 2; x < TILE; x += 8) px(x, 7, 4, 18, ballast ? "#5a3d1e" : "#4a4a4e");
+  px(0, 10, TILE, 2, "#c8c8cc");
+  px(0, 20, TILE, 2, "#c8c8cc");
+};
+
 const drawSpray = (tx: number, ty: number, px: Px): void => {
   px(0, 0, TILE, TILE, "#4a4a4a");
   for (let i = 0; i < TILE; i += 8) px(i, (tx + ty) % 2 === 0 ? 0 : 30, 4, 2, "#e1b12c");
@@ -160,13 +172,17 @@ export const renderMap = (map: CityMap): HTMLCanvasElement => {
         g.fillRect(ox + x, oy + y, w, h);
       };
       const t = tileAt(map, tx, ty);
-      if (t === Tile.Road) drawRoad(map, tx, ty, px);
-      else if (t === Tile.Sidewalk) drawSidewalk(map, tx, ty, px);
+      if (t === Tile.Road) {
+        drawRoad(map, tx, ty, px);
+        // Passaggio a livello: rotaie sopra l'asfalto
+        if (ty === RAIL_ROW) drawRail(tx, ty, px, false);
+      } else if (t === Tile.Sidewalk) drawSidewalk(map, tx, ty, px);
       else if (t === Tile.Building) drawBuilding(map, tx, ty, px);
       else if (t === Tile.Grass) drawGrass(tx, ty, px);
       else if (t === Tile.Water) drawWater(tx, ty, px);
       else if (t === Tile.Phone) drawPhone(map, tx, ty, px);
       else if (t === Tile.Parking || t === Tile.ParkingCovered) drawParking(map, tx, ty, px);
+      else if (t === Tile.Rail) drawRail(tx, ty, px, true);
       else drawSpray(tx, ty, px);
     }
   }

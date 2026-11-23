@@ -54,6 +54,9 @@ export const PHONE_BOOTHS: Vec2[] = [
   { x: 55, y: 39 },
 ];
 
+/** Riga (in tile) su cui corre l'unico binario, da ovest a est attraverso tutta la città */
+export const RAIL_ROW = 19;
+
 export const SPRAY_SHOP: Rect = { x: 46, y: 16, w: 2, h: 2 };
 
 /** Parcheggi ricavati negli isolati, tutti affacciati su un marciapiede (h = 1: stalli lungo il
@@ -129,6 +132,10 @@ export const buildCity = (): CityMap => {
   }
 
   for (const l of LAKES) fill(tiles, l, Tile.Water);
+  // Binario in superficie: attraversa isolati e parco; dove incrocia una strada resta strada
+  // (passaggio a livello)
+  for (let x = 1; x < MAP_W - 1; x++)
+    if (tiles[idx(x, RAIL_ROW)] !== Tile.Road) tiles[idx(x, RAIL_ROW)] = Tile.Rail;
   for (const p of PHONE_BOOTHS) tiles[idx(p.x, p.y)] = Tile.Phone;
   fill(tiles, SPRAY_SHOP, Tile.SprayShop);
   for (const p of PARKING_LOTS) fill(tiles, p, p.covered ? Tile.ParkingCovered : Tile.Parking);

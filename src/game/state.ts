@@ -9,6 +9,7 @@ import type {
   Pedestrian,
   Pickup,
   Player,
+  Train,
 } from "../entities/types";
 import type { CityMap } from "../world/cityMap";
 
@@ -35,6 +36,10 @@ export interface GameState {
   explosions: Explosion[];
   /** Traffico aereo (solo grafico) */
   helis: Helicopter[];
+  /** Treno in transito (uno alla volta), secondi al prossimo e direzione del prossimo */
+  train: Train | null;
+  trainTimer: number;
+  trainDir: 1 | -1;
   pickups: Pickup[];
   camera: Camera;
   /** Livello di ricercato continuo 0..4 (le stelle sono la parte intera arrotondata) */

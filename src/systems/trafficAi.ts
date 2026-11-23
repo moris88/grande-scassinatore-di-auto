@@ -5,8 +5,10 @@ import type { Car } from "../entities/types";
 import { VEHICLES } from "../entities/vehicles";
 import type { GameState } from "../game/state";
 import { type CityMap, laneAt, tileAt, tileCenter, worldToTile } from "../world/cityMap";
+import { isRailCrossing } from "../world/railway";
 import { ALL_DIRS, type Dir, Tile, dirAngle, dirVector, oppositeDir } from "../world/tiles";
 import { isIntersectionTile, isJunctionTile, lightFor } from "../world/trafficLights";
+import { crossingClosed } from "./trainSystem";
 
 /** Le emergenze vanno più veloci della crociera normale */
 const EMERGENCY_BOOST = 1.4;
@@ -140,6 +142,17 @@ export const trafficControls = (car: Car, s: GameState): CarControls => {
     !inCrossing &&
     isIntersectionTile(s.map, car.aiTarget) &&
     lightFor(car.laneDir, s.time) !== "green"
+  ) {
+    car.stuckTime = 0;
+    return { steer: 0, throttle: forwardSpeed(car) > 5 ? -1 : 0, handbrake: false };
+  }
+
+  // Passaggio a livello chiuso: ci si ferma prima (chi è già sui binari prosegue e li libera).
+  // Vale anche per le emergenze: il treno non si ferma.
+  if (
+    !isRailCrossing(s.map, here) &&
+    isRailCrossing(s.map, car.aiTarget) &&
+    crossingClosed(s, car.aiTarget.x)
   ) {
     car.stuckTime = 0;
     return { steer: 0, throttle: forwardSpeed(car) > 5 ? -1 : 0, handbrake: false };

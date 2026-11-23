@@ -82,7 +82,18 @@ export interface CarTransition {
   getIn: number;
 }
 
-/** Elicottero del traffico aereo: vola sopra la città, non collide con niente */
+/** Treno sull'unico binario: si muove solo lungo x, sulla riga del binario */
+export interface Train {
+  /** x del muso (in pixel) */
+  head: number;
+  /** 1 = verso est, -1 = verso ovest */
+  dir: 1 | -1;
+  speed: number;
+  /** Numero di carrozze, locomotiva compresa */
+  wagons: number;
+}
+
+/** Elicottero del traffico aereo:vola sopra la città, non collide con niente */
 export interface Helicopter {
   pos: Vec2;
   vel: Vec2;

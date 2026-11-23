@@ -9,6 +9,7 @@ import { drawMinimap } from "./minimap";
 import { drawParkingRoofs } from "./parkingRoofs";
 import { drawPlayer } from "./playerRenderer";
 import { copSprite, deadPedSprite, pedSprite, pickupSprite } from "./sprites";
+import { drawRailway } from "./trainRenderer";
 import { vehicleSprite } from "./vehicleSprites";
 
 const drawRotated = (
@@ -173,6 +174,7 @@ export const renderGame = (
   const pl = s.player;
   drawPlayer(g, s, false);
   for (const c of s.cars) if (!c.dead) drawCar(g, s, c);
+  drawRailway(g, s);
   drawPlayer(g, s, true);
   drawParkingRoofs(g, s);
 

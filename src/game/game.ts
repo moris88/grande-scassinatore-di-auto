@@ -9,6 +9,7 @@ import { failMission, updateMissions } from "../systems/missionSystem";
 import { fillParking, updateParking } from "../systems/parkingSystem";
 import { updatePed } from "../systems/pedAi";
 import { updateSpawns } from "../systems/spawnSystem";
+import { updateTrains } from "../systems/trainSystem";
 import { isBusted, updateWanted } from "../systems/wantedSystem";
 import { updateBullets, updatePickups, updateWeapons } from "../systems/weaponSystem";
 import {
@@ -35,6 +36,9 @@ export const createGame = (): GameState => {
     bullets: [],
     explosions: [],
     helis: [],
+    train: null,
+    trainTimer: 8,
+    trainDir: 1,
     pickups: WEAPON_SPAWNS.map((w) => ({ pos: tileCenter(w.tile), weapon: w.weapon, respawn: 0 })),
     camera: { pos: { ...start }, zoom: 2 },
     heat: 0,
@@ -120,6 +124,7 @@ export const updateGame = (s: GameState, input: Input, dt: number): void => {
   updateSpawns(s);
   updateParking(s);
   updateAirTraffic(s, dt);
+  updateTrains(s, dt);
 
   if (!s.downReason) {
     if (s.player.health <= 0) knockDown(s, "wasted");

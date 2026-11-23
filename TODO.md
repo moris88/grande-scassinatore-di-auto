@@ -56,7 +56,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto
 
 ## Verifica finale
 - [x] Biome pulito
-- [x] Test verdi (32 test, incluse simulazioni headless del gioco)
+- [x] Test verdi (36 test, incluse simulazioni headless del gioco)
 - [x] `npm run build` senza errori
 - [ ] Prova di gioco nel browser (da fare a mano: `npm run dev`)
 
@@ -77,7 +77,7 @@ Decisioni prese:
 - Mafia: auto della mafia che inseguono e sparano; si vince sopravvivendo per un tempo o raggiungendo un punto sicuro; nascondigli (vicoli/garage) dove restando fermi qualche secondo ti perdono; se ti prendono perdi una vita.
 
 - [x] Risolvere il problema delle curve per le auto (lotto A: svolta pianificata con una tile d'anticipo, raggio minimo di sterzata ridotto da ~39 a ~21 px sotto i 60 px/s, retromarcia se incastrate fuori strada; campioni fuori strada dal 17% a <0,2%)
-- [~] inserire treni, camion, autobus nel traffico (lotto B: camion e autobus fatti, con misure, massa, velocità e resistenza propri; treni nel lotto D)
+- [x] inserire treni, camion, autobus nel traffico (lotto B: camion e autobus con misure, massa, velocità e resistenza propri; lotto D: binario in superficie sulla riga 19 da ovest a est, 6 passaggi a livello con sbarre e luci lampeggianti, treno di 4 carrozze ogni 25–40 s a direzioni alternate con tromba, distrugge i veicoli e uccide chi è sui binari, il traffico si ferma al passaggio chiuso)
 - [x] inserire le ambulanze per i pedoni che vengono investiti o uccisi (lotto B: l'ambulanza arriva a sirene accese seguendo il percorso sulle corsie, ignora i semafori, si ferma 3 s e rianima i pedoni a terra vicini)
 - [x] inserire elicotteri per il traffico aereo (lotto C: 2 elicotteri civili che attraversano la zona visibile, disegnati sopra a tutto con ombra a terra e rotore animato; solo grafici)
 - [x] rivedere i telefoni per le missioni (lotto A: cabina rossa con vetri, tetto a padiglione e insegna TEL; con missione disponibile la lampada sul tetto si accende con alone pulsante)

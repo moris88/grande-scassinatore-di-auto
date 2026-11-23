@@ -11,6 +11,8 @@ export enum Tile {
   Parking = 7,
   /** Parcheggio coperto: dall'alto non si vede chi c'è dentro (nascondiglio) */
   ParkingCovered = 8,
+  /** Binario della ferrovia (fuori dalle strade; agli incroci la tile resta strada) */
+  Rail = 9,
 }
 
 /** Direzioni di corsia come bitmask */
