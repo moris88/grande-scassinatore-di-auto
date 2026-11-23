@@ -56,7 +56,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto
 
 ## Verifica finale
 - [x] Biome pulito
-- [x] Test verdi (64 test, incluse simulazioni headless del gioco)
+- [x] Test verdi (67 test, incluse simulazioni headless del gioco)
 - [x] `npm run build` senza errori
 - [ ] Prova di gioco nel browser (da fare a mano: `npm run dev`)
 
@@ -107,8 +107,8 @@ Decisioni prese:
 - [x] quando porto le auto al garage o al concessionario, implementare il sistema di consegna e pagamento (lotto B: l'auto viene parcheggiata nel garage o davanti al concessionario, il giocatore riceve il pagamento corrispondente; se l'auto è danneggiata, il pagamento viene ridotto) (fatto: scendendo dall'auto dentro un garage o sul marciapiede davanti al concessionario la vendi; prezzo per modello, la sportiva vale di più, ridotto in proporzione ai danni; le auto delle missioni non si vendono)
 - [x] implementare il sistema di danni ai veicoli (lotto B: le auto subiscono danni visibili e funzionali in base agli urti, con riduzione delle prestazioni e possibilità di riparazione nei garage) (fatto: ammaccature, graffi, faro rotto e cofano accartocciato sempre più fitti al 75%, 50% e 25% di salute; velocità e accelerazione calano fino al 55% da distrutta; fumo in proporzione alla salute del modello; il garage ripara al 100% mentre rivernicia)
 - [x] ridurre il numero degli elicotteri e introdurre (con lo stesso tempo di comparsa) l'aereo che attraversa la città seguendo un percorso prestabilito (lotto B: l'aereo compare ai bordi della mappa e vola sopra la città, visibile dai giocatori; non interagisce con il traffico aereo o terrestre) (fatto: al massimo 1 elicottero; l'aereo compare con la stessa frequenza, su una di 3 rotte fisse da bordo a bordo, quella che passa più vicino alla camera; vola alto con ombra molto spostata, a 260 px/s, senza interazioni)
-- [ ] inserire il suono dei passi del giocatore (lotto B: il suono varia in base al tipo di superficie su cui cammina il personaggio, ad esempio asfalto, erba, pavimento interno)
-- [ ] implementare il sistema di suoni ambientali (lotto B: includere suoni di traffico, sirene, passi dei pedoni, animali e altri effetti sonori per rendere la città più viva)
+- [x] inserire il suono dei passi del giocatore (lotto B: il suono varia in base al tipo di superficie su cui cammina il personaggio, ad esempio asfalto, erba, pavimento interno) (fatto: un passo ogni mezzo ciclo di camminata, più fitti di corsa; suoni diversi per asfalto, marciapiede in pietra, erba, ghiaia dei binari e interni come parcheggi coperti e garage)
+- [x] implementare il sistema di suoni ambientali (lotto B: includere suoni di traffico, sirene, passi dei pedoni, animali e altri effetti sonori per rendere la città più viva) (fatto: brusio del traffico secondo i veicoli vicini, passi lontani dei pedoni, uccellini vicino ai parchi, cani che abbaiano e clacson lontani occasionali, oltre alle sirene già presenti; nei negozi la città tace)
 - [ ] implementare il sistema di dialoghi con i pedoni (lotto B: i pedoni reagiscono alle azioni del giocatore con frasi e comportamenti diversi, ad esempio saluti, insulti o richieste di aiuto)
 - [ ] implementare il sistema di reazioni dei pedoni agli eventi della città (lotto B: i pedoni reagiscono a incidenti, crimini, sirene e altri eventi con comportamenti realistici, come scappare, chiamare la polizia o fermarsi a guardare)
 

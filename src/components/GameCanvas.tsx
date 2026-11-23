@@ -4,6 +4,7 @@ import { startLoop } from "../engine/gameLoop";
 import { Input } from "../engine/input";
 import { dist } from "../engine/math";
 import { forwardSpeed } from "../entities/car";
+import { ambientLevels } from "../game/audioLevels";
 import { createGame, updateGame } from "../game/game";
 import { type HudData, makeHud } from "../game/hud";
 import { type GameState, stars } from "../game/state";
@@ -66,12 +67,14 @@ export function GameCanvas({ paused, onHud, onTogglePause }: Props) {
         renderGame(g, state, mapCanvas);
         for (const e of state.sounds) audio.play(e);
         state.sounds.length = 0;
-        if (pausedRef.current || state.gameOver) audio.quiet();
+        // In pausa, a fine partita e dentro i negozi la città tace
+        if (pausedRef.current || state.gameOver || state.shop) audio.quiet();
         else
           audio.update({
             carSpeed: state.player.car ? forwardSpeed(state.player.car) : null,
             siren: sirenLevel(state),
             time: state.time,
+            ambient: ambientLevels(state),
           });
         if (frames++ % 6 === 0) callbacks.current.onHud(makeHud(state));
       },

@@ -3,6 +3,7 @@ import { dist } from "../engine/math";
 import { applyImpactDamage, forwardSpeed, updateCarPhysics } from "../entities/car";
 import { updatePlayerOnFoot } from "../entities/player";
 import type { Car } from "../entities/types";
+import { stepSurface } from "./audioLevels";
 import { enterRange, startEnter, startExit, updateTransition } from "./carTransition";
 import { enterShop, shopAtDoor } from "./shopSystem";
 import { type GameState, playSound } from "./state";
@@ -58,6 +59,9 @@ export const updatePlayerControl = (s: GameState, input: Input, dt: number): voi
       pl.car = null;
     }
   } else {
+    const step = Math.floor(pl.walkPhase / 2);
     updatePlayerOnFoot(pl, input, dt, s.map);
+    // Un passo ogni due fotogrammi dell'animazione, col suono della superficie
+    if (Math.floor(pl.walkPhase / 2) !== step) playSound(s, stepSurface(s));
   }
 };
